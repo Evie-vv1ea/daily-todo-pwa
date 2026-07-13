@@ -1,0 +1,1906 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f2f2f7">
+  <meta name="description" content="小熊每日待办：支持离线使用的个人待办应用">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon-192.png">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <title>小熊每日待办</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f2f2f7;
+      --surface: #ffffff;
+      --surface-soft: #f8f8fb;
+      --text: #1c1c1e;
+      --muted: #6e6e73;
+      --line: #d8d8de;
+      --accent: #007aff;
+      --green: #34c759;
+      --orange: #ff9500;
+      --red: #ff3b30;
+      --purple: #af52de;
+      --shadow: 0 18px 52px rgba(0, 0, 0, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: var(--bg);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(100%, 460px);
+      min-height: 100vh;
+      margin: 0 auto;
+      background: var(--bg);
+      position: relative;
+    }
+
+    @media (min-width: 780px) {
+      body {
+        padding: 28px 0;
+      }
+
+      .app {
+        min-height: calc(100vh - 56px);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      padding: calc(14px + env(safe-area-inset-top)) 18px 12px;
+      background: rgba(242, 242, 247, 0.82);
+      border-bottom: 1px solid rgba(216, 216, 222, 0.72);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 36px;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .titleblock {
+      min-width: 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 31px;
+      line-height: 1.08;
+      font-weight: 720;
+      letter-spacing: 0;
+    }
+
+    .date-line {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.25;
+    }
+
+    .view-nav {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      margin-top: 14px;
+      padding: 3px;
+      background: rgba(118, 118, 128, 0.14);
+      border-radius: 8px;
+    }
+
+    .view-tab {
+      min-width: 0;
+      height: 34px;
+      color: var(--muted);
+      background: transparent;
+      border-radius: 7px;
+      font-size: 14px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .view-tab.active {
+      color: var(--text);
+      background: var(--surface);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.10);
+    }
+
+    .icon-button {
+      width: 36px;
+      height: 36px;
+      display: inline-grid;
+      place-items: center;
+      color: var(--accent);
+      background: rgba(0, 122, 255, 0.11);
+      border-radius: 999px;
+      transition: transform 120ms ease, background 120ms ease, opacity 120ms ease;
+    }
+
+    .icon-button:hover {
+      background: rgba(0, 122, 255, 0.16);
+    }
+
+    .icon-button:active {
+      transform: scale(0.95);
+    }
+
+    .icon-button svg {
+      width: 19px;
+      height: 19px;
+      stroke-width: 2.2;
+    }
+
+    .date-picker {
+      display: grid;
+      grid-template-columns: 36px 1fr 36px;
+      gap: 8px;
+      margin-top: 16px;
+      align-items: center;
+    }
+
+    .date-picker[hidden],
+    .view-panel[hidden] {
+      display: none;
+    }
+
+    .date-step {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      color: var(--text);
+      background: rgba(118, 118, 128, 0.12);
+      border-radius: 999px;
+    }
+
+    .date-input {
+      width: 100%;
+      height: 36px;
+      padding: 0 12px;
+      color: var(--text);
+      background: rgba(118, 118, 128, 0.12);
+      border: 1px solid transparent;
+      border-radius: 8px;
+      outline: 0;
+      text-align: center;
+    }
+
+    main {
+      padding: 16px 14px 86px;
+    }
+
+    .compose {
+      padding: 12px;
+      background: var(--surface);
+      border: 1px solid rgba(216, 216, 222, 0.92);
+      border-radius: 8px;
+    }
+
+    .compose-line {
+      display: grid;
+      grid-template-columns: 1fr 42px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .task-input {
+      width: 100%;
+      height: 44px;
+      padding: 0 14px;
+      color: var(--text);
+      background: var(--surface-soft);
+      border: 1px solid rgba(216, 216, 222, 0.92);
+      border-radius: 8px;
+      outline: 0;
+    }
+
+    .task-input:focus,
+    .field:focus,
+    textarea:focus,
+    select:focus {
+      border-color: rgba(0, 122, 255, 0.62);
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.13);
+    }
+
+    .add-button {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: var(--accent);
+      border-radius: 999px;
+      transition: transform 120ms ease, opacity 120ms ease;
+    }
+
+    .add-button:active {
+      transform: scale(0.95);
+    }
+
+    .add-button:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+
+    .add-button svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .compose-options {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .switch-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 32px;
+      color: var(--muted);
+      font-size: 14px;
+      user-select: none;
+    }
+
+    .switch-row input {
+      width: 44px;
+      height: 26px;
+      margin: 0;
+      appearance: none;
+      -webkit-appearance: none;
+      width: 44px;
+      height: 26px;
+      background: rgba(118, 118, 128, 0.22);
+      border-radius: 999px;
+      border: 0;
+      outline: 0;
+      transition: background 160ms ease;
+      cursor: pointer;
+    }
+
+    .switch-row input::after {
+      content: "";
+      width: 22px;
+      height: 22px;
+      display: block;
+      margin: 2px;
+      background: #ffffff;
+      border-radius: 999px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22);
+      transition: transform 160ms ease;
+    }
+
+    .switch-row input:checked {
+      background: var(--green);
+    }
+
+    .switch-row input:checked::after {
+      transform: translateX(18px);
+    }
+
+    .field,
+    select,
+    textarea {
+      width: 100%;
+      color: var(--text);
+      background: var(--surface-soft);
+      border: 1px solid rgba(216, 216, 222, 0.92);
+      border-radius: 8px;
+      outline: 0;
+    }
+
+    .field,
+    select {
+      height: 36px;
+      padding: 0 10px;
+    }
+
+    .tabs {
+      position: static;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      margin: 14px 0 10px;
+      padding: 3px;
+      background: rgba(118, 118, 128, 0.14);
+      border-radius: 8px;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .tab {
+      min-width: 0;
+      height: 34px;
+      color: var(--muted);
+      background: transparent;
+      border-radius: 7px;
+      font-size: 14px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .tab.active {
+      color: var(--text);
+      background: var(--surface);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.10);
+    }
+
+    .clipboard {
+      display: grid;
+      gap: 9px;
+      margin: 0;
+      padding: 12px;
+      background: var(--surface);
+      border: 1px solid rgba(216, 216, 222, 0.92);
+      border-radius: 8px;
+    }
+
+    .clipboard-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 680;
+    }
+
+    .small-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .text-button {
+      min-height: 30px;
+      padding: 0 10px;
+      color: var(--accent);
+      background: rgba(0, 122, 255, 0.10);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 620;
+    }
+
+    .text-button.danger {
+      color: var(--red);
+      background: rgba(255, 59, 48, 0.10);
+    }
+
+    .clipboard textarea {
+      min-height: 64px;
+    }
+
+    .clip-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .clip-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: start;
+      padding: 9px 8px;
+      background: var(--surface-soft);
+      border: 1px solid rgba(216, 216, 222, 0.72);
+      border-radius: 8px;
+    }
+
+    .clip-text {
+      margin: 0;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.38;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .clip-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .tools {
+      display: grid;
+      gap: 12px;
+    }
+
+    .tool-card {
+      display: grid;
+      gap: 12px;
+      padding: 12px;
+      background: var(--surface);
+      border: 1px solid rgba(216, 216, 222, 0.92);
+      border-radius: 8px;
+    }
+
+    .tool-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .tool-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .calc-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .calc-row {
+      display: grid;
+      grid-template-columns: 76px 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .calc-row label {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: right;
+    }
+
+    .calc-actions {
+      display: grid;
+      grid-template-columns: 1fr 92px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .task-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .task-card {
+      display: grid;
+      grid-template-columns: 32px 1fr auto;
+      gap: 9px;
+      align-items: start;
+      min-height: 66px;
+      padding: 12px 10px;
+      background: var(--surface);
+      border: 1px solid rgba(216, 216, 222, 0.92);
+      border-radius: 8px;
+    }
+
+    .task-card.done .task-title {
+      color: var(--muted);
+      text-decoration: line-through;
+      text-decoration-thickness: 1px;
+    }
+
+    .check {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      margin-top: 1px;
+      color: transparent;
+      background: transparent;
+      border: 2px solid var(--line);
+      border-radius: 999px;
+    }
+
+    .task-card.done .check {
+      color: white;
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .task-title {
+      margin: 1px 0 0;
+      font-size: 16px;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      min-height: 22px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      color: var(--muted);
+      background: rgba(118, 118, 128, 0.10);
+      border-radius: 999px;
+      font-size: 12px;
+      line-height: 1.1;
+    }
+
+    .chip.postponed {
+      color: #7a3db8;
+      background: rgba(175, 82, 222, 0.14);
+    }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .mini-button {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      background: rgba(118, 118, 128, 0.10);
+      border-radius: 999px;
+    }
+
+    .mini-button:hover {
+      color: var(--accent);
+      background: rgba(0, 122, 255, 0.12);
+    }
+
+    .mini-button.danger:hover {
+      color: var(--red);
+      background: rgba(255, 59, 48, 0.10);
+    }
+
+    .mini-button svg,
+    .check svg,
+    .date-step svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .empty {
+      display: grid;
+      place-items: center;
+      min-height: 160px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.45;
+    }
+
+    .sheet-mask {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: none;
+      align-items: end;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.22);
+    }
+
+    .sheet-mask.open {
+      display: flex;
+    }
+
+    .sheet {
+      width: min(100%, 430px);
+      padding: 12px;
+      background: var(--surface);
+      border-radius: 8px;
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
+    }
+
+    .sheet-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .sheet-title {
+      font-size: 18px;
+      font-weight: 680;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .two-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    textarea {
+      min-height: 84px;
+      padding: 10px;
+      resize: vertical;
+    }
+
+    .clipboard textarea {
+      min-height: 64px;
+    }
+
+    label {
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .sheet-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .primary,
+    .secondary {
+      height: 42px;
+      border-radius: 8px;
+      font-weight: 650;
+    }
+
+    .primary {
+      color: white;
+      background: var(--accent);
+    }
+
+    .secondary {
+      color: var(--accent);
+      background: rgba(0, 122, 255, 0.11);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(18px + env(safe-area-inset-bottom));
+      z-index: 40;
+      transform: translateX(-50%) translateY(16px);
+      min-width: 160px;
+      max-width: min(88vw, 360px);
+      padding: 10px 14px;
+      color: white;
+      background: rgba(28, 28, 30, 0.88);
+      border-radius: 999px;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .floating-panel {
+      position: fixed;
+      right: max(14px, env(safe-area-inset-right));
+      bottom: max(14px, env(safe-area-inset-bottom));
+      z-index: 20;
+      width: min(360px, calc(100vw - 28px));
+      max-height: min(70vh, 560px);
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(216, 216, 222, 0.92);
+      border-radius: 8px;
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.20);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .floating-panel[hidden] {
+      display: none;
+    }
+
+    .floating-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .floating-title {
+      min-width: 0;
+      font-size: 16px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mini-form {
+      display: grid;
+      grid-template-columns: 1fr 38px;
+      gap: 8px;
+    }
+
+    .mini-form .task-input {
+      height: 38px;
+    }
+
+    .mini-form .add-button {
+      width: 38px;
+      height: 38px;
+    }
+
+    .floating-list {
+      display: grid;
+      gap: 7px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .mini-task {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      gap: 7px;
+      align-items: start;
+      padding: 9px 8px;
+      background: var(--surface-soft);
+      border: 1px solid rgba(216, 216, 222, 0.72);
+      border-radius: 8px;
+    }
+
+    .mini-task.done .task-title {
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+
+    .mini-task .check {
+      width: 24px;
+      height: 24px;
+    }
+
+    .mini-task .task-title {
+      font-size: 14px;
+      margin-top: 2px;
+    }
+
+    .floating-list .empty {
+      min-height: 70px;
+    }
+
+    @media (max-width: 380px) {
+      .two-cols {
+        grid-template-columns: 1fr;
+      }
+
+      .task-card {
+        grid-template-columns: 30px 1fr;
+      }
+
+      .actions {
+        grid-column: 2;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="toolbar">
+        <div class="titleblock">
+          <h1 id="pageTitle">今天</h1>
+          <div class="date-line" id="dateLine"></div>
+        </div>
+        <div class="top-actions">
+          <button class="icon-button" id="floatBtn" type="button" title="悬浮窗" aria-label="悬浮窗">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 9h6"/><path d="M9 13h4"/></svg>
+          </button>
+        </div>
+      </div>
+      <nav class="view-nav" aria-label="页面">
+        <button class="view-tab active" type="button" data-view="tasks">待办</button>
+        <button class="view-tab" type="button" data-view="clipboard">剪贴板</button>
+        <button class="view-tab" type="button" data-view="tools">工具</button>
+      </nav>
+      <div class="date-picker" id="datePicker">
+        <button class="date-step" id="prevDay" type="button" title="前一天" aria-label="前一天">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <input class="date-input" id="viewDate" type="date" aria-label="日期">
+        <button class="date-step" id="nextDay" type="button" title="后一天" aria-label="后一天">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="view-panel" id="tasksView">
+        <form class="compose" id="taskForm" autocomplete="off">
+          <div class="compose-line">
+            <input class="task-input" id="taskText" type="text" placeholder="写下要做的事" maxlength="120" aria-label="任务内容">
+            <button class="add-button" id="addBtn" type="submit" title="添加" aria-label="添加">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+            </button>
+          </div>
+          <div class="compose-options">
+            <label class="switch-row">
+              <span>本周每天</span>
+              <input id="weekRepeat" type="checkbox">
+            </label>
+          </div>
+        </form>
+
+        <nav class="tabs" aria-label="筛选">
+          <button class="tab active" type="button" data-filter="today">当日</button>
+          <button class="tab" type="button" data-filter="all">全部</button>
+          <button class="tab" type="button" data-filter="postponed">延期</button>
+        </nav>
+
+        <section class="task-list" id="taskList" aria-label="任务列表"></section>
+        <div class="empty" id="emptyState" hidden>这一天很清爽</div>
+      </section>
+
+      <section class="view-panel" id="clipboardView" hidden>
+        <section class="clipboard" aria-label="剪贴板">
+          <div class="clipboard-head">
+            <h2 class="section-title">剪贴板</h2>
+            <div class="small-actions">
+              <button class="text-button" id="pasteClip" type="button">粘贴</button>
+              <button class="text-button danger" id="clearClips" type="button">清空</button>
+            </div>
+          </div>
+          <textarea id="clipInput" maxlength="2000" placeholder="粘贴到这里" aria-label="剪贴板内容"></textarea>
+          <div class="clip-list" id="clipList"></div>
+        </section>
+      </section>
+
+      <section class="view-panel" id="toolsView" hidden>
+        <section class="tools" aria-label="工具">
+          <article class="tool-card">
+            <div class="tool-head">
+              <h2 class="section-title">划线价</h2>
+              <label class="switch-row">
+                <span>监听</span>
+                <input id="watchAdd30" type="checkbox">
+              </label>
+            </div>
+            <div class="tool-note">复制数字后自动填入，并复制 +30 后的结果</div>
+            <div class="calc-grid">
+              <div class="calc-row">
+                <label for="add30Input">输入</label>
+                <input class="field" id="add30Input" type="text" inputmode="decimal" autocomplete="off">
+              </div>
+              <div class="calc-actions">
+                <div class="calc-row">
+                  <label for="add30Output">结果</label>
+                  <input class="field" id="add30Output" type="text" readonly>
+                </div>
+                <button class="text-button" id="copyAdd30" type="button">复制</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="tool-card">
+            <div class="tool-head">
+              <h2 class="section-title">换美金</h2>
+              <label class="switch-row">
+                <span>监听</span>
+                <input id="watchUsd" type="checkbox">
+              </label>
+            </div>
+            <div class="tool-note">复制数字后自动填入，并复制整数结果</div>
+            <div class="calc-grid">
+              <div class="calc-row">
+                <label for="usdInput">输入</label>
+                <input class="field" id="usdInput" type="text" inputmode="decimal" autocomplete="off">
+              </div>
+              <div class="calc-row">
+                <label for="usdIntOutput">整数</label>
+                <input class="field" id="usdIntOutput" type="text" readonly>
+              </div>
+              <div class="calc-actions">
+                <div class="calc-row">
+                  <label for="usdDecOutput">两位</label>
+                  <input class="field" id="usdDecOutput" type="text" readonly>
+                </div>
+                <button class="text-button" id="copyUsd" type="button">复制</button>
+              </div>
+            </div>
+          </article>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <section class="floating-panel" id="floatingPanel" hidden aria-label="悬浮窗">
+    <div class="floating-head">
+      <div class="floating-title" id="floatingTitle">今天</div>
+      <div class="small-actions">
+        <button class="mini-button" id="pinFloat" type="button" title="置顶" aria-label="置顶">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 4 6 6"/><path d="m10 8 6 6"/><path d="M8 10 4 14l6 6 4-4"/><path d="m14 4-4 4"/><path d="M4 20 9 15"/></svg>
+        </button>
+        <button class="mini-button" id="closeFloat" type="button" title="关闭" aria-label="关闭">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+    </div>
+    <form class="mini-form" id="miniForm" autocomplete="off">
+      <input class="task-input" id="miniInput" type="text" placeholder="写下要做的事" maxlength="120" aria-label="悬浮窗任务内容">
+      <button class="add-button" id="miniAdd" type="submit" title="添加" aria-label="添加">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+      </button>
+    </form>
+    <div class="floating-list" id="floatingList"></div>
+  </section>
+
+  <div class="sheet-mask" id="sheetMask" aria-hidden="true">
+    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+      <div class="sheet-head">
+        <div class="sheet-title" id="sheetTitle">任务</div>
+        <button class="icon-button" id="closeSheet" type="button" title="关闭" aria-label="关闭">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <form id="editForm" class="form-grid">
+        <label>
+          内容
+          <input class="field" id="editTitle" type="text" maxlength="120" required>
+        </label>
+        <label>
+          日期
+          <input class="field" id="editDate" type="date" required>
+        </label>
+        <label>
+          备注
+          <textarea id="editNote" maxlength="500"></textarea>
+        </label>
+        <div class="sheet-actions">
+          <button class="secondary" type="button" id="deleteFromSheet">删除</button>
+          <button class="primary" type="submit">保存</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const storageKey = "dailyTodo.tasks.v1";
+    const clipboardKey = "dailyTodo.clipboard.v1";
+    const formatDate = new Intl.DateTimeFormat("zh-CN", {
+      month: "long",
+      day: "numeric",
+      weekday: "long"
+    });
+    const fullDate = new Intl.DateTimeFormat("zh-CN", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      weekday: "long"
+    });
+
+    const els = {
+      pageTitle: document.querySelector("#pageTitle"),
+      dateLine: document.querySelector("#dateLine"),
+      viewTabs: document.querySelectorAll(".view-tab"),
+      datePicker: document.querySelector("#datePicker"),
+      viewDate: document.querySelector("#viewDate"),
+      prevDay: document.querySelector("#prevDay"),
+      nextDay: document.querySelector("#nextDay"),
+      taskForm: document.querySelector("#taskForm"),
+      taskText: document.querySelector("#taskText"),
+      addBtn: document.querySelector("#addBtn"),
+      weekRepeat: document.querySelector("#weekRepeat"),
+      tabs: document.querySelectorAll(".tab"),
+      taskList: document.querySelector("#taskList"),
+      emptyState: document.querySelector("#emptyState"),
+      tasksView: document.querySelector("#tasksView"),
+      clipboardView: document.querySelector("#clipboardView"),
+      toolsView: document.querySelector("#toolsView"),
+      clipInput: document.querySelector("#clipInput"),
+      pasteClip: document.querySelector("#pasteClip"),
+      clearClips: document.querySelector("#clearClips"),
+      clipList: document.querySelector("#clipList"),
+      floatBtn: document.querySelector("#floatBtn"),
+      floatingPanel: document.querySelector("#floatingPanel"),
+      floatingTitle: document.querySelector("#floatingTitle"),
+      closeFloat: document.querySelector("#closeFloat"),
+      pinFloat: document.querySelector("#pinFloat"),
+      miniForm: document.querySelector("#miniForm"),
+      miniInput: document.querySelector("#miniInput"),
+      miniAdd: document.querySelector("#miniAdd"),
+      floatingList: document.querySelector("#floatingList"),
+      sheetMask: document.querySelector("#sheetMask"),
+      closeSheet: document.querySelector("#closeSheet"),
+      editForm: document.querySelector("#editForm"),
+      editTitle: document.querySelector("#editTitle"),
+      editDate: document.querySelector("#editDate"),
+      editNote: document.querySelector("#editNote"),
+      deleteFromSheet: document.querySelector("#deleteFromSheet"),
+      add30Input: document.querySelector("#add30Input"),
+      add30Output: document.querySelector("#add30Output"),
+      copyAdd30: document.querySelector("#copyAdd30"),
+      watchAdd30: document.querySelector("#watchAdd30"),
+      usdInput: document.querySelector("#usdInput"),
+      usdIntOutput: document.querySelector("#usdIntOutput"),
+      usdDecOutput: document.querySelector("#usdDecOutput"),
+      copyUsd: document.querySelector("#copyUsd"),
+      watchUsd: document.querySelector("#watchUsd"),
+      toast: document.querySelector("#toast")
+    };
+
+    let state = {
+      tasks: loadTasks(),
+      clips: loadClips(),
+      view: "tasks",
+      viewDate: todayISO(),
+      filter: "today",
+      editingId: null,
+      weekRepeat: false,
+      floatingOpen: false,
+      toolWatch: null
+    };
+
+    let clipClearTimer;
+    let toolWatchTimer;
+    let lastToolSeenClipboard = "";
+    let lastToolCopied = "";
+    let pipWindow = null;
+
+    const icons = {
+      check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg>',
+      edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+      delay: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M12 7v5l3 2"/><path d="M21 3v6h-6"/></svg>',
+      trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5"/><path d="M14 11v5"/></svg>',
+      copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>'
+    };
+
+    init();
+
+    function init() {
+      els.viewDate.value = state.viewDate;
+      els.addBtn.disabled = true;
+      els.miniAdd.disabled = true;
+      clearExpiredClips();
+      scheduleClipClear();
+      bindEvents();
+      render();
+    }
+
+    function bindEvents() {
+      els.taskText.addEventListener("input", () => {
+        els.addBtn.disabled = !els.taskText.value.trim();
+      });
+
+      els.weekRepeat.addEventListener("change", () => {
+        state.weekRepeat = els.weekRepeat.checked;
+      });
+
+      els.viewTabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+          state.view = tab.dataset.view;
+          render();
+        });
+      });
+
+      els.taskForm.addEventListener("submit", event => {
+        event.preventDefault();
+        addTask();
+      });
+
+      els.prevDay.addEventListener("click", () => shiftViewDate(-1));
+      els.nextDay.addEventListener("click", () => shiftViewDate(1));
+      els.viewDate.addEventListener("change", () => {
+        state.viewDate = els.viewDate.value || todayISO();
+        render();
+      });
+
+      els.tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+          state.filter = tab.dataset.filter;
+          render();
+        });
+      });
+
+      els.taskList.addEventListener("click", handleTaskAction);
+      els.floatingList.addEventListener("click", handleTaskAction);
+
+      els.clipInput.addEventListener("paste", event => {
+        const text = event.clipboardData?.getData("text");
+        if (!text?.trim()) return;
+        event.preventDefault();
+        addClip(text);
+        els.clipInput.value = "";
+      });
+
+      els.clipInput.addEventListener("keydown", event => {
+        if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+          event.preventDefault();
+          addClip(els.clipInput.value);
+          els.clipInput.value = "";
+        }
+      });
+
+      els.pasteClip.addEventListener("click", pasteFromClipboard);
+      els.clearClips.addEventListener("click", clearTodayClips);
+      els.clipList.addEventListener("click", event => {
+        const button = event.target.closest("[data-clip-action]");
+        if (!button) return;
+        const clip = state.clips.find(item => item.id === button.dataset.clipId);
+        if (!clip) return;
+        if (button.dataset.clipAction === "copy") copyText(clip.text);
+        if (button.dataset.clipAction === "delete") deleteClip(clip.id);
+      });
+
+      els.floatBtn.addEventListener("click", () => {
+        state.floatingOpen = !state.floatingOpen;
+        renderFloat();
+      });
+
+      els.closeFloat.addEventListener("click", () => {
+        state.floatingOpen = false;
+        renderFloat();
+      });
+
+      els.pinFloat.addEventListener("click", toggleTopWindow);
+
+      els.miniInput.addEventListener("input", () => {
+        els.miniAdd.disabled = !els.miniInput.value.trim();
+      });
+
+      els.miniForm.addEventListener("submit", event => {
+        event.preventDefault();
+        addTaskFromText(els.miniInput.value, { repeatWeek: false, focusInput: els.miniInput });
+      });
+
+      els.closeSheet.addEventListener("click", closeSheet);
+      els.sheetMask.addEventListener("click", event => {
+        if (event.target === els.sheetMask) closeSheet();
+      });
+
+      els.editForm.addEventListener("submit", event => {
+        event.preventDefault();
+        saveEdit();
+      });
+
+      els.deleteFromSheet.addEventListener("click", () => {
+        if (!state.editingId) return;
+        deleteTask(state.editingId);
+        closeSheet();
+      });
+
+      els.add30Input.addEventListener("input", updateAdd30);
+      els.copyAdd30.addEventListener("click", () => copyText(els.add30Output.value));
+      els.watchAdd30.addEventListener("change", () => {
+        if (els.watchAdd30.checked) enableToolWatch("add30");
+        else if (state.toolWatch === "add30") disableToolWatch();
+      });
+      els.usdInput.addEventListener("input", updateUsd);
+      els.copyUsd.addEventListener("click", () => copyText(els.usdIntOutput.value));
+      els.watchUsd.addEventListener("change", () => {
+        if (els.watchUsd.checked) enableToolWatch("usd");
+        else if (state.toolWatch === "usd") disableToolWatch();
+      });
+    }
+
+    function addTask() {
+      addTaskFromText(els.taskText.value, { repeatWeek: state.weekRepeat, focusInput: els.taskText });
+    }
+
+    function addTaskFromText(text, options = {}) {
+      const raw = text.trim();
+      if (!raw) return;
+      const guess = inferTask(raw);
+      const baseDate = guess.date || state.viewDate;
+      const dates = options.repeatWeek ? weekDates(baseDate) : [baseDate];
+      const title = cleanTitle(raw);
+      const now = new Date().toISOString();
+      const tasks = dates.map(date => ({
+        id: makeId(),
+        title,
+        date,
+        status: "todo",
+        note: "",
+        createdAt: now,
+        updatedAt: now
+      }));
+      state.tasks.unshift(...tasks);
+      state.viewDate = baseDate;
+      els.viewDate.value = state.viewDate;
+      options.focusInput.value = "";
+      els.addBtn.disabled = true;
+      els.miniAdd.disabled = true;
+      saveTasks();
+      render();
+      toast(dates.length > 1 ? "已添加本周" : "已添加");
+      options.focusInput.focus();
+    }
+
+    function inferTask(text) {
+      const value = text.trim();
+      const result = {};
+      if (!value) return result;
+      if (/后天/.test(value)) result.date = addDays(todayISO(), 2);
+      else if (/明天|明日/.test(value)) result.date = addDays(todayISO(), 1);
+      else if (/今天|今日/.test(value)) result.date = todayISO();
+
+      const monthDay = value.match(/(\d{1,2})\s*[月/-]\s*(\d{1,2})\s*[日号]?/);
+      if (monthDay) {
+        const now = new Date();
+        const month = Number(monthDay[1]) - 1;
+        const day = Number(monthDay[2]);
+        let date = new Date(now.getFullYear(), month, day);
+        if (date < startOfDay(now)) date = new Date(now.getFullYear() + 1, month, day);
+        result.date = toISO(date);
+      }
+
+      const weekday = value.match(/(下周)?(?:周|星期)([一二三四五六日天])/);
+      if (weekday) result.date = nextWeekday(weekday[2], Boolean(weekday[1]));
+
+      return result;
+    }
+
+    function cleanTitle(text) {
+      return text
+        .replace(/^(今天|今日|明天|明日|后天)\s*/, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function render() {
+      renderChrome();
+
+      els.tabs.forEach(tab => {
+        tab.classList.toggle("active", tab.dataset.filter === state.filter);
+      });
+
+      const visible = getVisibleTasks();
+      els.taskList.innerHTML = visible.map(renderTask).join("");
+      els.emptyState.hidden = visible.length > 0;
+      renderClips();
+      renderFloat();
+      renderPipWindow();
+    }
+
+    function renderChrome() {
+      const view = parseISO(state.viewDate);
+      const isToday = state.viewDate === todayISO();
+      els.viewTabs.forEach(tab => {
+        tab.classList.toggle("active", tab.dataset.view === state.view);
+      });
+      els.tasksView.hidden = state.view !== "tasks";
+      els.clipboardView.hidden = state.view !== "clipboard";
+      els.toolsView.hidden = state.view !== "tools";
+      els.datePicker.hidden = state.view !== "tasks";
+      els.floatBtn.hidden = state.view !== "tasks";
+
+      if (state.view === "tasks") {
+        els.pageTitle.textContent = isToday ? "今天" : formatDate.format(view);
+        els.dateLine.textContent = fullDate.format(view);
+        els.viewDate.value = state.viewDate;
+      } else if (state.view === "clipboard") {
+        els.pageTitle.textContent = "剪贴板";
+        els.dateLine.textContent = "当天内容 20:00 自动清空";
+      } else {
+        els.pageTitle.textContent = "工具";
+        els.dateLine.textContent = "划线价和换美金";
+      }
+    }
+
+    function getVisibleTasks() {
+      let list = state.tasks.filter(task => task.status !== "canceled");
+      if (state.filter === "today") list = list.filter(task => task.date === state.viewDate);
+      if (state.filter === "postponed") list = list.filter(task => task.status === "postponed");
+      return list.sort((a, b) => {
+        if (a.date !== b.date) return a.date > b.date ? 1 : -1;
+        const statusRank = statusOrder(a.status) - statusOrder(b.status);
+        if (statusRank) return statusRank;
+        return b.createdAt.localeCompare(a.createdAt);
+      });
+    }
+
+    function handleTaskAction(event) {
+      const item = event.target.closest("[data-task-id]");
+      if (!item) return;
+      const id = item.dataset.taskId;
+      const action = event.target.closest("[data-action]")?.dataset.action;
+      if (!action) return;
+      if (action === "toggle") toggleDone(id);
+      if (action === "edit") openSheet(id);
+      if (action === "delay") postponeTask(id);
+      if (action === "delete") deleteTask(id);
+    }
+
+    function renderTask(task) {
+      const status = normalizeStatus(task.status);
+      const postponedChip = status === "postponed" ? '<span class="chip postponed">延期</span>' : "";
+      return `
+        <article class="task-card ${escapeHTML(status)}" data-task-id="${escapeHTML(task.id)}">
+          <button class="check" type="button" data-action="toggle" title="完成" aria-label="完成">${icons.check}</button>
+          <div>
+            <p class="task-title">${escapeHTML(task.title)}</p>
+            <div class="meta">
+              <span class="chip">${escapeHTML(shortDate(task.date))}</span>
+              ${postponedChip}
+            </div>
+          </div>
+          <div class="actions">
+            <button class="mini-button" type="button" data-action="edit" title="编辑" aria-label="编辑">${icons.edit}</button>
+            <button class="mini-button" type="button" data-action="delay" title="延期" aria-label="延期">${icons.delay}</button>
+            <button class="mini-button danger" type="button" data-action="delete" title="删除" aria-label="删除">${icons.trash}</button>
+          </div>
+        </article>
+      `;
+    }
+
+    function normalizeStatus(status) {
+      if (status === "done" || status === "postponed") return status;
+      return "todo";
+    }
+
+    function statusOrder(status) {
+      const normalized = normalizeStatus(status);
+      if (normalized === "todo") return 0;
+      if (normalized === "postponed") return 1;
+      return 2;
+    }
+
+    function updateAdd30() {
+      const number = extractToolNumber(els.add30Input.value);
+      if (Number.isNaN(number)) {
+        els.add30Output.value = "";
+        return;
+      }
+      els.add30Output.value = formatToolResult(number + 30);
+    }
+
+    function updateUsd() {
+      const number = extractToolNumber(els.usdInput.value);
+      if (Number.isNaN(number)) {
+        els.usdIntOutput.value = "";
+        els.usdDecOutput.value = "";
+        return;
+      }
+      const value = number * 1.3405;
+      els.usdIntOutput.value = String(Math.round(value));
+      els.usdDecOutput.value = value.toFixed(2);
+    }
+
+    function extractToolNumber(text) {
+      const cleaned = String(text || "").replace(/,/g, ".").replace(/\s/g, "").trim();
+      if (!cleaned) return NaN;
+      const direct = parseFloat(cleaned);
+      if (!Number.isNaN(direct)) return direct;
+      const match = String(text || "").match(/-?\d+(?:[.,]\d+)?/);
+      return match ? parseFloat(match[0].replace(",", ".")) : NaN;
+    }
+
+    function formatToolResult(value) {
+      if (Math.abs(value - Math.round(value)) < 0.0000001) return String(Math.round(value));
+      return String(value);
+    }
+
+    async function copyText(text, options = {}) {
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        if (!options.silent) toast("已复制");
+        return true;
+      } catch {
+        if (!options.silent) toast("复制失败");
+        return false;
+      }
+    }
+
+    async function enableToolWatch(tool) {
+      if (!navigator.clipboard?.readText || !navigator.clipboard?.writeText) {
+        toast("浏览器不允许监听剪贴板");
+        syncToolWatch(null);
+        return;
+      }
+      try {
+        lastToolSeenClipboard = await navigator.clipboard.readText();
+      } catch {
+        toast("请允许读取剪贴板");
+        syncToolWatch(null);
+        return;
+      }
+      syncToolWatch(tool);
+      pollToolClipboard();
+      clearInterval(toolWatchTimer);
+      toolWatchTimer = setInterval(pollToolClipboard, 700);
+      toast(tool === "add30" ? "划线价监听中" : "换美金监听中");
+    }
+
+    function disableToolWatch() {
+      clearInterval(toolWatchTimer);
+      syncToolWatch(null);
+      lastToolSeenClipboard = "";
+      lastToolCopied = "";
+      toast("已停止监听");
+    }
+
+    function syncToolWatch(tool) {
+      state.toolWatch = tool;
+      els.watchAdd30.checked = tool === "add30";
+      els.watchUsd.checked = tool === "usd";
+    }
+
+    async function pollToolClipboard() {
+      if (!state.toolWatch) return;
+      let text = "";
+      try {
+        text = await navigator.clipboard.readText();
+      } catch {
+        disableToolWatch();
+        toast("剪贴板监听已关闭");
+        return;
+      }
+      const value = String(text || "").trim();
+      if (!value || value === lastToolSeenClipboard || value === lastToolCopied) return;
+      const number = extractToolNumber(value);
+      if (Number.isNaN(number)) {
+        lastToolSeenClipboard = value;
+        return;
+      }
+      lastToolSeenClipboard = value;
+
+      if (state.toolWatch === "add30") {
+        els.add30Input.value = formatToolResult(number);
+        updateAdd30();
+        await copyToolResult(els.add30Output.value, "划线价已复制");
+      }
+
+      if (state.toolWatch === "usd") {
+        els.usdInput.value = formatToolResult(number);
+        updateUsd();
+        await copyToolResult(els.usdIntOutput.value, "换美金整数已复制");
+      }
+    }
+
+    async function copyToolResult(text, message) {
+      if (!text) return;
+      const copied = await copyText(text, { silent: true });
+      if (copied) {
+        lastToolCopied = text;
+        lastToolSeenClipboard = text;
+        toast(message);
+      } else {
+        toast("自动复制失败");
+      }
+    }
+
+    function renderClips() {
+      clearExpiredClips();
+      const clips = todayClips();
+      els.clipList.innerHTML = clips.map(clip => `
+        <article class="clip-item">
+          <p class="clip-text">${escapeHTML(clip.text)}</p>
+          <div class="clip-actions">
+            <button class="mini-button" type="button" data-clip-action="copy" data-clip-id="${escapeHTML(clip.id)}" title="复制" aria-label="复制">${icons.copy}</button>
+            <button class="mini-button danger" type="button" data-clip-action="delete" data-clip-id="${escapeHTML(clip.id)}" title="删除" aria-label="删除">${icons.trash}</button>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderFloat() {
+      els.floatingPanel.hidden = !state.floatingOpen;
+      els.floatingTitle.textContent = state.viewDate === todayISO() ? "今天" : formatDate.format(parseISO(state.viewDate));
+      if (!state.floatingOpen) return;
+      const tasks = state.tasks
+        .filter(task => task.date === state.viewDate && task.status !== "canceled")
+        .sort((a, b) => statusOrder(a.status) - statusOrder(b.status) || b.createdAt.localeCompare(a.createdAt));
+      els.floatingList.innerHTML = tasks.length ? tasks.map(renderMiniTask).join("") : '<div class="empty">这一天很清爽</div>';
+    }
+
+    function renderMiniTask(task) {
+      const status = normalizeStatus(task.status);
+      return `
+        <article class="mini-task ${escapeHTML(status)}" data-task-id="${escapeHTML(task.id)}">
+          <button class="check" type="button" data-action="toggle" title="完成" aria-label="完成">${icons.check}</button>
+          <p class="task-title">${escapeHTML(task.title)}</p>
+          <div class="actions">
+            <button class="mini-button" type="button" data-action="delay" title="延期" aria-label="延期">${icons.delay}</button>
+            <button class="mini-button danger" type="button" data-action="delete" title="删除" aria-label="删除">${icons.trash}</button>
+          </div>
+        </article>
+      `;
+    }
+
+    async function pasteFromClipboard() {
+      try {
+        if (!navigator.clipboard?.readText) throw new Error("No clipboard API");
+        const text = await navigator.clipboard.readText();
+        addClip(text);
+      } catch {
+        toast("直接粘贴到框里");
+      }
+    }
+
+    function addClip(text) {
+      const value = text.trim();
+      if (!value) return;
+      if (new Date() >= clipExpiry(todayISO())) {
+        toast("20点后不保存");
+        return;
+      }
+      state.clips.unshift({
+        id: makeId(),
+        text: value,
+        date: todayISO(),
+        createdAt: new Date().toISOString()
+      });
+      saveClips();
+      render();
+      toast("已存入");
+    }
+
+    function todayClips() {
+      return state.clips.filter(clip => clip.date === todayISO() && !isClipExpired(clip));
+    }
+
+    function deleteClip(id) {
+      state.clips = state.clips.filter(clip => clip.id !== id);
+      saveClips();
+      render();
+    }
+
+    function clearTodayClips() {
+      state.clips = state.clips.filter(clip => clip.date !== todayISO());
+      saveClips();
+      render();
+      toast("已清空");
+    }
+
+    function clearExpiredClips(showToast = false) {
+      const before = state.clips.length;
+      state.clips = state.clips.filter(clip => !isClipExpired(clip));
+      if (state.clips.length !== before) {
+        saveClips();
+        if (showToast) toast("剪贴板已清空");
+      }
+    }
+
+    function scheduleClipClear() {
+      clearTimeout(clipClearTimer);
+      clipClearTimer = setTimeout(() => {
+        clearExpiredClips(true);
+        render();
+        scheduleClipClear();
+      }, msUntilNextClipClear());
+    }
+
+    function msUntilNextClipClear() {
+      const now = new Date();
+      const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 20, 0, 0, 0);
+      if (now >= target) target.setDate(target.getDate() + 1);
+      return Math.max(1000, target - now + 500);
+    }
+
+    function clipExpiry(iso) {
+      const date = parseISO(iso);
+      date.setHours(20, 0, 0, 0);
+      return date;
+    }
+
+    function isClipExpired(clip) {
+      return new Date() >= clipExpiry(clip.date);
+    }
+
+    async function toggleTopWindow() {
+      if (pipWindow && !pipWindow.closed) {
+        pipWindow.close();
+        pipWindow = null;
+        return;
+      }
+      if (!("documentPictureInPicture" in window)) {
+        toast("当前浏览器不支持系统置顶");
+        return;
+      }
+      try {
+        pipWindow = await window.documentPictureInPicture.requestWindow({ width: 360, height: 520 });
+        pipWindow.addEventListener("pagehide", () => {
+          pipWindow = null;
+        });
+        renderPipWindow();
+      } catch {
+        toast("置顶未开启");
+      }
+    }
+
+    function renderPipWindow() {
+      if (!pipWindow || pipWindow.closed) return;
+      const doc = pipWindow.document;
+      const tasks = state.tasks
+        .filter(task => task.date === state.viewDate && task.status !== "canceled")
+        .sort((a, b) => statusOrder(a.status) - statusOrder(b.status) || b.createdAt.localeCompare(a.createdAt));
+      doc.body.innerHTML = `
+        <style>
+          * { box-sizing: border-box; }
+          body { margin: 0; padding: 12px; color: #1c1c1e; background: #f2f2f7; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif; }
+          .head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+          h1 { margin: 0; font-size: 18px; line-height: 1.2; }
+          button { border: 0; cursor: pointer; font: inherit; }
+          form { display: grid; grid-template-columns: 1fr 38px; gap: 8px; margin-bottom: 10px; }
+          input { min-width: 0; height: 38px; padding: 0 12px; border: 1px solid #d8d8de; border-radius: 8px; background: #fff; outline: 0; }
+          .add, .round { display: grid; place-items: center; background: #007aff; color: white; border-radius: 999px; }
+          .add { width: 38px; height: 38px; font-size: 24px; }
+          .round { width: 28px; height: 28px; background: rgba(118,118,128,.12); color: #6e6e73; }
+          .list { display: grid; gap: 8px; }
+          .task { display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: start; padding: 9px 8px; border: 1px solid #d8d8de; border-radius: 8px; background: #fff; }
+          .title { margin: 4px 0 0; font-size: 14px; line-height: 1.35; word-break: break-word; }
+          .done .title { color: #6e6e73; text-decoration: line-through; }
+          .check { width: 24px; height: 24px; border: 2px solid #d8d8de; background: transparent; border-radius: 999px; }
+          .done .check { background: #34c759; border-color: #34c759; }
+          .actions { display: flex; gap: 6px; }
+        </style>
+        <div class="head">
+          <h1>${escapeHTML(state.viewDate === todayISO() ? "今天" : formatDate.format(parseISO(state.viewDate)))}</h1>
+          <button class="round" id="close">×</button>
+        </div>
+        <form id="pipForm">
+          <input id="pipInput" maxlength="120" placeholder="写下要做的事">
+          <button class="add" type="submit">+</button>
+        </form>
+        <div class="list">
+          ${tasks.map(task => `
+            <article class="task ${escapeHTML(normalizeStatus(task.status))}" data-task-id="${escapeHTML(task.id)}">
+              <button class="check" data-action="toggle" title="完成"></button>
+              <p class="title">${escapeHTML(task.title)}</p>
+              <div class="actions">
+                <button class="round" data-action="delay" title="延期">↷</button>
+                <button class="round" data-action="delete" title="删除">×</button>
+              </div>
+            </article>
+          `).join("") || '<p class="title">这一天很清爽</p>'}
+        </div>
+      `;
+      doc.querySelector("#close").addEventListener("click", () => pipWindow.close());
+      doc.querySelector("#pipForm").addEventListener("submit", event => {
+        event.preventDefault();
+        const input = doc.querySelector("#pipInput");
+        addTaskFromText(input.value, { repeatWeek: false, focusInput: input });
+      });
+      doc.querySelector(".list").addEventListener("click", event => {
+        const item = event.target.closest("[data-task-id]");
+        if (!item) return;
+        const id = item.dataset.taskId;
+        const action = event.target.closest("[data-action]")?.dataset.action;
+        if (action === "toggle") toggleDone(id);
+        if (action === "delay") postponeTask(id);
+        if (action === "delete") deleteTask(id);
+      });
+    }
+
+    function toggleDone(id) {
+      const task = findTask(id);
+      if (!task) return;
+      task.status = task.status === "done" ? "todo" : "done";
+      task.updatedAt = new Date().toISOString();
+      saveTasks();
+      render();
+    }
+
+    function postponeTask(id) {
+      const task = findTask(id);
+      if (!task) return;
+      task.date = addDays(task.date, 1);
+      task.status = "postponed";
+      task.updatedAt = new Date().toISOString();
+      saveTasks();
+      render();
+      toast("已延期一天");
+    }
+
+    function deleteTask(id) {
+      state.tasks = state.tasks.filter(task => task.id !== id);
+      saveTasks();
+      render();
+      toast("已删除");
+    }
+
+    function openSheet(id) {
+      const task = findTask(id);
+      if (!task) return;
+      state.editingId = id;
+      els.editTitle.value = task.title;
+      els.editDate.value = task.date;
+      els.editNote.value = task.note || "";
+      els.sheetMask.classList.add("open");
+      els.sheetMask.setAttribute("aria-hidden", "false");
+      setTimeout(() => els.editTitle.focus(), 0);
+    }
+
+    function closeSheet() {
+      state.editingId = null;
+      els.sheetMask.classList.remove("open");
+      els.sheetMask.setAttribute("aria-hidden", "true");
+    }
+
+    function saveEdit() {
+      const task = findTask(state.editingId);
+      if (!task) return;
+      task.title = els.editTitle.value.trim();
+      task.date = els.editDate.value;
+      task.note = els.editNote.value.trim();
+      task.updatedAt = new Date().toISOString();
+      saveTasks();
+      closeSheet();
+      render();
+      toast("已保存");
+    }
+
+    function loadTasks() {
+      try {
+        const raw = localStorage.getItem(storageKey);
+        const tasks = raw ? JSON.parse(raw) : [];
+        return Array.isArray(tasks) ? tasks : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveTasks() {
+      localStorage.setItem(storageKey, JSON.stringify(state.tasks));
+    }
+
+    function loadClips() {
+      try {
+        const raw = localStorage.getItem(clipboardKey);
+        const clips = raw ? JSON.parse(raw) : [];
+        return Array.isArray(clips) ? clips.filter(clip => clip?.text && clip?.date) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveClips() {
+      localStorage.setItem(clipboardKey, JSON.stringify(state.clips));
+    }
+
+    function findTask(id) {
+      return state.tasks.find(task => task.id === id);
+    }
+
+    function shiftViewDate(days) {
+      state.viewDate = addDays(state.viewDate, days);
+      render();
+    }
+
+    function todayISO() {
+      return toISO(new Date());
+    }
+
+    function addDays(iso, days) {
+      const date = parseISO(iso);
+      date.setDate(date.getDate() + days);
+      return toISO(date);
+    }
+
+    function weekDates(iso) {
+      const date = parseISO(iso);
+      const day = date.getDay();
+      const mondayOffset = day === 0 ? -6 : 1 - day;
+      const monday = addDays(iso, mondayOffset);
+      return Array.from({ length: 7 }, (_, index) => addDays(monday, index));
+    }
+
+    function parseISO(iso) {
+      const [year, month, day] = iso.split("-").map(Number);
+      return new Date(year, month - 1, day);
+    }
+
+    function toISO(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function startOfDay(date) {
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+
+    function shortDate(iso) {
+      const date = parseISO(iso);
+      const today = todayISO();
+      if (iso === today) return "今天";
+      if (iso === addDays(today, 1)) return "明天";
+      return `${date.getMonth() + 1}/${date.getDate()}`;
+    }
+
+    function nextWeekday(dayText, nextWeek) {
+      const map = { "日": 0, "天": 0, "一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6 };
+      const target = map[dayText];
+      const now = new Date();
+      let diff = target - now.getDay();
+      if (diff <= 0) diff += 7;
+      if (nextWeek) diff += 7;
+      return toISO(new Date(now.getFullYear(), now.getMonth(), now.getDate() + diff));
+    }
+
+    function makeId() {
+      if (crypto.randomUUID) return crypto.randomUUID();
+      return `task-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
+
+    let toastTimer;
+    function toast(message) {
+      clearTimeout(toastTimer);
+      els.toast.textContent = message;
+      els.toast.classList.add("show");
+      toastTimer = setTimeout(() => els.toast.classList.remove("show"), 1400);
+    }
+  </script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js").catch(error => {
+          console.warn("离线功能注册失败：", error);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
