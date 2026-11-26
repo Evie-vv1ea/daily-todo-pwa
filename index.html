@@ -130,6 +130,7 @@
     }
 
     button:focus-visible,
+    summary:focus-visible,
     input:focus-visible,
     select:focus-visible,
     textarea:focus-visible {
@@ -137,32 +138,14 @@
       outline-offset: 2px;
     }
 
-    .theme-picker {
-      position: relative;
-    }
-
-    .theme-picker summary {
-      list-style: none;
-      cursor: pointer;
-    }
-
-    .theme-picker summary::-webkit-details-marker {
-      display: none;
-    }
-
     .theme-options {
-      position: absolute;
-      z-index: 1;
-      top: calc(100% + 7px);
-      right: 0;
       display: flex;
-      gap: 5px;
-      margin: 0;
-      padding: 7px;
+      flex-wrap: wrap;
+      gap: 7px;
+      padding: 8px;
       border: 1px solid var(--line);
-      border-radius: 14px;
+      border-radius: 12px;
       background: var(--surface);
-      box-shadow: 0 8px 18px rgba(48, 34, 44, .12);
     }
 
     .theme-option {
@@ -193,76 +176,68 @@
       outline-offset: 2px;
     }
 
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 5;
-      padding: calc(14px + env(safe-area-inset-top)) 18px 12px;
-      background: rgba(var(--paper), .92);
-      border-bottom: 1px solid var(--line);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-    }
-
-    .toolbar {
+    .view-heading {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      min-height: 36px;
+      margin-bottom: 12px;
     }
 
-    .top-actions {
-      display: flex;
-      gap: 8px;
-      flex: 0 0 auto;
-    }
-
-    .titleblock {
-      min-width: 0;
-    }
-
-    h1 {
+    .view-heading h2 {
       margin: 0;
-      font-size: clamp(24px, 6vw, 29px);
-      line-height: 1.08;
-      font-weight: 720;
-      letter-spacing: 0;
+      font-size: 18px;
+      line-height: 1.3;
     }
 
-    .date-line {
-      margin-top: 4px;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.25;
+    .note-controls {
+      margin-bottom: 12px;
     }
 
-    .view-nav {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 4px;
-      margin-top: 14px;
-      padding: 3px;
-      background: var(--tint);
-      border-radius: 8px;
+    .note-controls .date-picker,
+    .note-controls .tabs {
+      margin: 0;
     }
 
-    .view-tab {
-      min-width: 0;
-      height: 34px;
-      color: var(--muted);
-      background: transparent;
-      border-radius: 7px;
-      font-size: 14px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .view-tab.active {
+    .note-menu {
+      position: fixed;
+      z-index: 25;
+      width: min(188px, calc(100vw - 16px));
+      max-height: calc(100dvh - 16px);
+      overflow: auto;
+      padding: 5px;
       color: var(--text);
-      background: var(--surface);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.10);
+      background: #fffdfa;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .note-menu button {
+      width: 100%;
+      min-height: 32px;
+      padding: 5px 9px;
+      border-radius: 7px;
+      color: inherit;
+      background: transparent;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    .note-menu button:hover,
+    .note-menu button:focus-visible {
+      background: var(--tint);
+      outline-offset: -2px;
+    }
+
+    .note-menu [data-command="delete"] {
+      color: var(--red);
+    }
+
+    .note-menu hr {
+      margin: 4px;
+      border: 0;
+      border-top: 1px solid var(--line);
     }
 
     .icon-button {
@@ -326,7 +301,7 @@
     }
 
     main {
-      padding: 16px 14px 24px;
+      padding: 12px;
     }
 
     .compose {
@@ -626,11 +601,11 @@
 
     .task-card {
       display: grid;
-      grid-template-columns: 32px 1fr auto;
+      grid-template-columns: 28px minmax(0, 1fr);
       gap: 9px;
       align-items: start;
-      min-height: 66px;
-      padding: 12px 10px;
+      min-height: 48px;
+      padding: 8px 10px;
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -727,7 +702,7 @@
     .empty {
       display: grid;
       place-items: center;
-      min-height: 160px;
+      min-height: 52px;
       color: var(--muted);
       text-align: center;
       line-height: 1.45;
@@ -846,7 +821,7 @@
 
     .floating-panel {
       position: absolute;
-      top: 106px;
+      top: 58px;
       left: 20px;
       z-index: 20;
       width: min(360px, calc(100vw - 40px));
@@ -939,13 +914,6 @@
         grid-template-columns: 1fr;
       }
 
-      .task-card {
-        grid-template-columns: 30px 1fr;
-      }
-
-      .actions {
-        grid-column: 2;
-      }
     }
   </style>
 </head>
@@ -955,87 +923,68 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14v10l-4 4H5z"/><path d="M15 19v-4h4M8 9h8M8 13h4"/></svg>
       to-do-list
     </button>
-    <div class="app" id="noteApp" hidden>
-      <header class="topbar">
-        <div class="toolbar">
-          <div class="titleblock">
-            <h1 id="pageTitle">今天</h1>
-            <div class="date-line" id="dateLine"></div>
-          </div>
-          <div class="top-actions">
-            <details class="theme-picker" id="themePicker">
-              <summary class="icon-button" title="便签颜色" aria-label="便签颜色">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 1.4-3.4 1.1 1.1 0 0 1 .8-1.9H17A4 4 0 0 0 21 12a9 9 0 0 0-9-9Z"/><path d="M7.5 12h.01M9.5 8h.01M14 7.5h.01M17 11h.01"/></svg>
-              </summary>
-              <div class="theme-options" role="group" aria-label="便签颜色">
-                <label class="theme-option" data-theme="rose" title="藕粉">
-                  <input type="radio" name="note-theme" value="rose" aria-label="藕粉">
-                  <span aria-hidden="true"></span>
-                </label>
-                <label class="theme-option" data-theme="butter" title="奶黄">
-                  <input type="radio" name="note-theme" value="butter" aria-label="奶黄">
-                  <span aria-hidden="true"></span>
-                </label>
-                <label class="theme-option" data-theme="sage" title="鼠尾草绿">
-                  <input type="radio" name="note-theme" value="sage" aria-label="鼠尾草绿">
-                  <span aria-hidden="true"></span>
-                </label>
-                <label class="theme-option" data-theme="lilac" title="淡紫">
-                  <input type="radio" name="note-theme" value="lilac" aria-label="淡紫">
-                  <span aria-hidden="true"></span>
-                </label>
-                <label class="theme-option" data-theme="oat" title="燕麦米">
-                  <input type="radio" name="note-theme" value="oat" aria-label="燕麦米">
-                  <span aria-hidden="true"></span>
+    <div class="app" id="noteApp" aria-label="待办便签" tabindex="-1" hidden>
+      <main>
+        <div class="view-heading" id="viewHeading" hidden>
+          <h2 id="viewTitle"></h2>
+          <button class="text-button" id="backToTasks" type="button">返回待办</button>
+        </div>
+        <section class="view-panel" id="tasksView">
+          <div class="note-controls" id="noteControls" hidden>
+            <form class="compose" id="taskForm" hidden autocomplete="off">
+              <div class="compose-line">
+                <input class="task-input" id="taskText" type="text" placeholder="写下要做的事" maxlength="120" aria-label="任务内容">
+                <button class="add-button" id="addBtn" type="submit" title="添加" aria-label="添加">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                </button>
+              </div>
+              <div class="compose-options">
+                <label class="switch-row">
+                  <span>本周每天</span>
+                  <input id="weekRepeat" type="checkbox">
                 </label>
               </div>
-            </details>
-            <button class="icon-button" id="floatBtn" type="button" title="悬浮窗" aria-label="悬浮窗">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 9h6"/><path d="M9 13h4"/></svg>
-            </button>
-          </div>
-        </div>
-        <nav class="view-nav" aria-label="页面">
-          <button class="view-tab active" type="button" data-view="tasks">待办</button>
-          <button class="view-tab" type="button" data-view="clipboard">剪贴板</button>
-          <button class="view-tab" type="button" data-view="tools">工具</button>
-        </nav>
-        <div class="date-picker" id="datePicker">
-          <button class="date-step" id="prevDay" type="button" title="前一天" aria-label="前一天">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
-          </button>
-          <input class="date-input" id="viewDate" type="date" aria-label="日期">
-          <button class="date-step" id="nextDay" type="button" title="后一天" aria-label="后一天">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-          </button>
-        </div>
-      </header>
-
-      <main>
-        <section class="view-panel" id="tasksView">
-          <form class="compose" id="taskForm" autocomplete="off">
-            <div class="compose-line">
-              <input class="task-input" id="taskText" type="text" placeholder="写下要做的事" maxlength="120" aria-label="任务内容">
-              <button class="add-button" id="addBtn" type="submit" title="添加" aria-label="添加">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+            </form>
+            <div class="date-picker" id="datePicker" hidden>
+              <button class="date-step" id="prevDay" type="button" title="前一天" aria-label="前一天">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+              <input class="date-input" id="viewDate" type="date" aria-label="日期">
+              <button class="date-step" id="nextDay" type="button" title="后一天" aria-label="后一天">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
               </button>
             </div>
-            <div class="compose-options">
-              <label class="switch-row">
-                <span>本周每天</span>
-                <input id="weekRepeat" type="checkbox">
+            <nav class="tabs" id="noteFilter" aria-label="筛选" hidden>
+              <button class="tab active" type="button" data-filter="today">当日</button>
+              <button class="tab" type="button" data-filter="all">全部</button>
+              <button class="tab" type="button" data-filter="postponed">延期</button>
+            </nav>
+            <div class="theme-options" id="themePicker" role="group" aria-label="便签颜色" hidden>
+              <label class="theme-option" data-theme="rose" title="藕粉">
+                <input type="radio" name="note-theme" value="rose" aria-label="藕粉">
+                <span aria-hidden="true"></span>
+              </label>
+              <label class="theme-option" data-theme="butter" title="奶黄">
+                <input type="radio" name="note-theme" value="butter" aria-label="奶黄">
+                <span aria-hidden="true"></span>
+              </label>
+              <label class="theme-option" data-theme="sage" title="鼠尾草绿">
+                <input type="radio" name="note-theme" value="sage" aria-label="鼠尾草绿">
+                <span aria-hidden="true"></span>
+              </label>
+              <label class="theme-option" data-theme="lilac" title="淡紫">
+                <input type="radio" name="note-theme" value="lilac" aria-label="淡紫">
+                <span aria-hidden="true"></span>
+              </label>
+              <label class="theme-option" data-theme="oat" title="燕麦米">
+                <input type="radio" name="note-theme" value="oat" aria-label="燕麦米">
+                <span aria-hidden="true"></span>
               </label>
             </div>
-          </form>
-
-          <nav class="tabs" aria-label="筛选">
-            <button class="tab active" type="button" data-filter="today">当日</button>
-            <button class="tab" type="button" data-filter="all">全部</button>
-            <button class="tab" type="button" data-filter="postponed">延期</button>
-          </nav>
+          </div>
 
           <section class="task-list" id="taskList" aria-label="任务列表"></section>
-          <div class="empty" id="emptyState" hidden>这一天很清爽</div>
+          <div class="empty" id="emptyState" hidden>没有任务</div>
         </section>
 
         <section class="view-panel" id="clipboardView" hidden>
@@ -1131,6 +1080,24 @@
       <div class="floating-list" id="floatingList"></div>
     </section>
 
+    <div class="note-menu" id="noteMenu" role="menu" aria-label="便签操作" hidden>
+      <div id="taskCommands" role="group" aria-label="任务操作" hidden>
+        <button type="button" role="menuitem" data-command="edit">编辑任务</button>
+        <button type="button" role="menuitem" data-command="delay">延期一天</button>
+        <button type="button" role="menuitem" data-command="delete">删除任务</button>
+        <hr role="separator">
+      </div>
+      <button type="button" role="menuitem" data-command="tasks" hidden>返回待办</button>
+      <button type="button" role="menuitem" data-command="add">新增任务</button>
+      <button type="button" role="menuitem" data-command="date">选择日期</button>
+      <button type="button" role="menuitem" data-command="filter">筛选任务</button>
+      <hr role="separator">
+      <button type="button" role="menuitem" data-command="clipboard">剪贴板</button>
+      <button type="button" role="menuitem" data-command="tools">工具</button>
+      <hr role="separator">
+      <button type="button" role="menuitem" data-command="theme">便签颜色</button>
+      <button type="button" role="menuitem" data-command="float">打开悬浮窗</button>
+    </div>
   </div>
 
   <div class="sheet-mask" id="sheetMask" aria-hidden="true">
@@ -1173,21 +1140,19 @@
       day: "numeric",
       weekday: "long"
     });
-    const fullDate = new Intl.DateTimeFormat("zh-CN", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      weekday: "long"
-    });
 
     const els = {
       noteDock: document.querySelector("#noteDock"),
       noteToggle: document.querySelector("#noteToggle"),
       noteApp: document.querySelector("#noteApp"),
       themePicker: document.querySelector("#themePicker"),
-      pageTitle: document.querySelector("#pageTitle"),
-      dateLine: document.querySelector("#dateLine"),
-      viewTabs: document.querySelectorAll(".view-tab"),
+      noteMenu: document.querySelector("#noteMenu"),
+      taskCommands: document.querySelector("#taskCommands"),
+      noteControls: document.querySelector("#noteControls"),
+      noteFilter: document.querySelector("#noteFilter"),
+      viewHeading: document.querySelector("#viewHeading"),
+      viewTitle: document.querySelector("#viewTitle"),
+      backToTasks: document.querySelector("#backToTasks"),
       datePicker: document.querySelector("#datePicker"),
       viewDate: document.querySelector("#viewDate"),
       prevDay: document.querySelector("#prevDay"),
@@ -1206,7 +1171,6 @@
       pasteClip: document.querySelector("#pasteClip"),
       clearClips: document.querySelector("#clearClips"),
       clipList: document.querySelector("#clipList"),
-      floatBtn: document.querySelector("#floatBtn"),
       floatingPanel: document.querySelector("#floatingPanel"),
       floatingTitle: document.querySelector("#floatingTitle"),
       closeFloat: document.querySelector("#closeFloat"),
@@ -1238,6 +1202,7 @@
       tasks: loadTasks(),
       clips: loadClips(),
       view: "tasks",
+      noteControl: null,
       viewDate: todayISO(),
       filter: "today",
       editingId: null,
@@ -1255,10 +1220,11 @@
     let notePinned = false;
     let pointerInsideNote = false;
     let suppressNoteHover = false;
+    let contextTaskId = null;
+    let contextAnchor = null;
 
     const icons = {
       check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg>',
-      edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
       delay: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M12 7v5l3 2"/><path d="M21 3v6h-6"/></svg>',
       trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5"/><path d="M14 11v5"/></svg>',
       copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>'
@@ -1294,6 +1260,10 @@
       });
 
       els.noteDock.addEventListener("focusout", scheduleNoteClose);
+      els.noteDock.addEventListener("contextmenu", openNoteMenu);
+      els.noteMenu.addEventListener("click", handleNoteCommand);
+      els.noteMenu.addEventListener("keydown", handleNoteMenuKey);
+      els.backToTasks.addEventListener("click", () => setNoteView("tasks"));
       els.noteToggle.addEventListener("click", () => {
         notePinned = !notePinned;
         suppressNoteHover = !notePinned && pointerInsideNote;
@@ -1301,16 +1271,23 @@
       });
 
       els.noteDock.addEventListener("keydown", event => {
+        if (event.key === "ContextMenu" || (event.shiftKey && event.key === "F10")) {
+          openNoteMenu(event);
+          return;
+        }
         if (event.key !== "Escape" || els.noteApp.hidden || els.sheetMask.classList.contains("open")) return;
-        if (els.themePicker.open) {
-          els.themePicker.open = false;
-          els.themePicker.querySelector("summary").focus();
+        if (state.noteControl || state.view !== "tasks") {
+          setNoteView("tasks");
           return;
         }
         notePinned = false;
         suppressNoteHover = pointerInsideNote;
         els.noteToggle.focus();
         setNoteOpen(false);
+      });
+
+      document.addEventListener("pointerdown", event => {
+        if (!els.noteMenu.contains(event.target)) closeNoteMenu();
       });
 
       els.themePicker.addEventListener("change", event => {
@@ -1330,7 +1307,7 @@
         const editing = els.noteDock.contains(active) &&
           active.matches("input, textarea, select, [contenteditable], :focus-visible") &&
           active !== els.noteToggle;
-        if (pointerInsideNote || notePinned || editing || els.sheetMask.classList.contains("open")) return;
+        if (pointerInsideNote || notePinned || editing || !els.noteMenu.hidden || els.sheetMask.classList.contains("open")) return;
         setNoteOpen(false);
       }, 220);
     }
@@ -1339,9 +1316,104 @@
       els.noteApp.hidden = !open;
       els.noteToggle.setAttribute("aria-expanded", String(open));
       if (!open) {
-        els.themePicker.open = false;
+        closeNoteMenu();
+        state.view = "tasks";
+        state.noteControl = null;
+        renderChrome();
       }
       renderFloat();
+    }
+
+    function openNoteMenu(event) {
+      const keyboard = event.type === "keydown";
+      const target = event.target;
+      if (target.closest("input, textarea, select, [contenteditable]") && !keyboard) return;
+      event.preventDefault();
+      if (event.type === "keydown") event.stopPropagation();
+      setNoteOpen(true);
+      contextTaskId = target.closest("[data-task-id]")?.dataset.taskId ?? null;
+      contextAnchor = document.activeElement;
+      els.taskCommands.hidden = !contextTaskId;
+      els.noteMenu.querySelector('[data-command="tasks"]').hidden = state.view === "tasks" && !state.noteControl;
+      els.noteMenu.querySelector('[data-command="float"]').textContent = state.floatingOpen ? "关闭悬浮窗" : "打开悬浮窗";
+      els.noteMenu.hidden = false;
+      const anchor = target.getBoundingClientRect();
+      const x = keyboard ? anchor.left + 8 : event.clientX;
+      const y = keyboard ? anchor.bottom + 4 : event.clientY;
+      els.noteMenu.style.left = Math.max(8, Math.min(x, window.innerWidth - els.noteMenu.offsetWidth - 8)) + "px";
+      els.noteMenu.style.top = Math.max(8, Math.min(y, window.innerHeight - els.noteMenu.offsetHeight - 8)) + "px";
+      getNoteMenuItems()[0]?.focus();
+    }
+
+    function getNoteMenuItems() {
+      return [...els.noteMenu.querySelectorAll('[role="menuitem"]')].filter(button => !button.closest("[hidden]"));
+    }
+
+    function closeNoteMenu(restoreFocus = false) {
+      if (els.noteMenu.hidden) return;
+      els.noteMenu.hidden = true;
+      if (restoreFocus) {
+        const anchor = els.noteDock.contains(contextAnchor) ? contextAnchor : els.noteApp;
+        anchor.focus();
+      }
+      contextAnchor = null;
+      scheduleNoteClose();
+    }
+
+    function handleNoteMenuKey(event) {
+      if (event.key === "Escape" || event.key === "Tab") {
+        event.preventDefault();
+        event.stopPropagation();
+        closeNoteMenu(true);
+        return;
+      }
+      const items = getNoteMenuItems();
+      const current = items.indexOf(document.activeElement);
+      const next = {
+        ArrowDown: (current + 1) % items.length,
+        ArrowUp: (current + items.length - 1) % items.length,
+        Home: 0,
+        End: items.length - 1
+      }[event.key];
+      if (next === undefined) return;
+      event.preventDefault();
+      items[next]?.focus();
+    }
+
+    function handleNoteCommand(event) {
+      const button = event.target.closest("[data-command]");
+      if (!button) return;
+      const command = button.dataset.command;
+      const taskId = contextTaskId;
+      closeNoteMenu();
+      if (command === "edit" || command === "delay" || command === "delete") {
+        runTaskAction(taskId, command);
+        return;
+      }
+      if (command === "float") {
+        state.floatingOpen = !state.floatingOpen;
+        renderFloat();
+        (state.floatingOpen ? els.miniInput : els.noteApp).focus();
+        return;
+      }
+      if (command === "clipboard" || command === "tools") {
+        setNoteView(command);
+        return;
+      }
+      setNoteView("tasks", command === "tasks" ? null : command);
+    }
+
+    function setNoteView(view, control = null) {
+      state.view = view;
+      state.noteControl = control;
+      render();
+      const targets = {
+        add: els.taskText,
+        date: els.viewDate,
+        filter: els.noteFilter.querySelector(".tab.active"),
+        theme: els.themePicker.querySelector("input:checked")
+      };
+      (targets[control] || (view === "tasks" ? els.noteApp : els.backToTasks)).focus();
     }
 
     function loadTheme() {
@@ -1372,13 +1444,6 @@
 
       els.weekRepeat.addEventListener("change", () => {
         state.weekRepeat = els.weekRepeat.checked;
-      });
-
-      els.viewTabs.forEach(tab => {
-        tab.addEventListener("click", () => {
-          state.view = tab.dataset.view;
-          render();
-        });
       });
 
       els.taskForm.addEventListener("submit", event => {
@@ -1428,11 +1493,6 @@
         if (!clip) return;
         if (button.dataset.clipAction === "copy") copyText(clip.text);
         if (button.dataset.clipAction === "delete") deleteClip(clip.id);
-      });
-
-      els.floatBtn.addEventListener("click", () => {
-        state.floatingOpen = !state.floatingOpen;
-        renderFloat();
       });
 
       els.closeFloat.addEventListener("click", () => {
@@ -1561,28 +1621,26 @@
     }
 
     function renderChrome() {
-      const view = parseISO(state.viewDate);
-      const isToday = state.viewDate === todayISO();
-      els.viewTabs.forEach(tab => {
-        tab.classList.toggle("active", tab.dataset.view === state.view);
-      });
-      els.tasksView.hidden = state.view !== "tasks";
+      const inTasks = state.view === "tasks";
+      const control = state.noteControl;
+      els.tasksView.hidden = !inTasks;
       els.clipboardView.hidden = state.view !== "clipboard";
       els.toolsView.hidden = state.view !== "tools";
-      els.datePicker.hidden = state.view !== "tasks";
-      els.floatBtn.hidden = state.view !== "tasks";
-
-      if (state.view === "tasks") {
-        els.pageTitle.textContent = isToday ? "今天" : formatDate.format(view);
-        els.dateLine.textContent = fullDate.format(view);
-        els.viewDate.value = state.viewDate;
-      } else if (state.view === "clipboard") {
-        els.pageTitle.textContent = "剪贴板";
-        els.dateLine.textContent = "当天内容 20:00 自动清空";
-      } else {
-        els.pageTitle.textContent = "工具";
-        els.dateLine.textContent = "划线价和换美金";
-      }
+      els.viewHeading.hidden = inTasks && !control;
+      els.viewTitle.textContent = {
+        clipboard: "剪贴板",
+        tools: "工具",
+        add: "新增任务",
+        date: "选择日期",
+        filter: "筛选任务",
+        theme: "便签颜色"
+      }[inTasks ? control : state.view] || "";
+      els.noteControls.hidden = !inTasks || !control;
+      els.taskForm.hidden = control !== "add";
+      els.datePicker.hidden = control !== "date";
+      els.noteFilter.hidden = control !== "filter";
+      els.themePicker.hidden = control !== "theme";
+      els.viewDate.value = state.viewDate;
     }
 
     function getVisibleTasks() {
@@ -1602,7 +1660,10 @@
       if (!item) return;
       const id = item.dataset.taskId;
       const action = event.target.closest("[data-action]")?.dataset.action;
-      if (!action) return;
+      if (action) runTaskAction(id, action);
+    }
+
+    function runTaskAction(id, action) {
       if (action === "toggle") toggleDone(id);
       if (action === "edit") openSheet(id);
       if (action === "delay") postponeTask(id);
@@ -1612,20 +1673,14 @@
     function renderTask(task) {
       const status = normalizeStatus(task.status);
       const postponedChip = status === "postponed" ? '<span class="chip postponed">延期</span>' : "";
+      const dateChip = state.filter !== "today" ? `<span class="chip">${escapeHTML(shortDate(task.date))}</span>` : "";
+      const metadata = dateChip + postponedChip;
       return `
         <article class="task-card ${escapeHTML(status)}" data-task-id="${escapeHTML(task.id)}">
           <button class="check" type="button" data-action="toggle" title="完成" aria-label="完成">${icons.check}</button>
           <div>
             <p class="task-title">${escapeHTML(task.title)}</p>
-            <div class="meta">
-              <span class="chip">${escapeHTML(shortDate(task.date))}</span>
-              ${postponedChip}
-            </div>
-          </div>
-          <div class="actions">
-            <button class="mini-button" type="button" data-action="edit" title="编辑" aria-label="编辑">${icons.edit}</button>
-            <button class="mini-button" type="button" data-action="delay" title="延期" aria-label="延期">${icons.delay}</button>
-            <button class="mini-button danger" type="button" data-action="delete" title="删除" aria-label="删除">${icons.trash}</button>
+            ${metadata ? `<div class="meta">${metadata}</div>` : ""}
           </div>
         </article>
       `;
