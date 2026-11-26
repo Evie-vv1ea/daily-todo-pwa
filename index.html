@@ -3,27 +3,54 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#ffecf3">
-  <meta name="description" content="小熊每日待办：支持离线使用的个人待办应用">
+  <meta name="theme-color" content="#f6efeb">
+  <meta name="description" content="to-do-list · 支持离线使用的个人待办应用">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <title>小熊每日待办</title>
+  <title>to-do-list</title>
   <style>
     :root {
       color-scheme: light;
-      --bg: #fff7fa;
-      --surface: #ffffff;
-      --surface-soft: #fff6f9;
-      --text: #303034;
-      --muted: #76767a;
-      --line: #eadce2;
-      --accent: #ff94b9;
-      --green: #34c759;
+      --bg: #f6efeb;
+      --note: rgba(var(--paper), .76);
+      --surface: rgba(255, 255, 255, .88);
+      --surface-soft: rgba(255, 255, 255, .62);
+      --tint: rgba(var(--paper), .68);
+      --text: #32282e;
+      --muted: #695c63;
+      --line: rgba(63, 46, 58, .16);
+      --green: #447c5d;
       --orange: #ff9500;
-      --red: #ff3b30;
+      --red: #ad373e;
       --purple: #af52de;
-      --shadow: 0 18px 52px rgba(112, 62, 82, 0.16);
+      --shadow: 0 14px 34px rgba(70, 42, 54, .14);
+    }
+
+    :root,
+    [data-theme="rose"] {
+      --paper: 255, 226, 234;
+      --accent: #85475d;
+    }
+
+    [data-theme="butter"] {
+      --paper: 255, 235, 179;
+      --accent: #715518;
+    }
+
+    [data-theme="sage"] {
+      --paper: 213, 233, 212;
+      --accent: #375f48;
+    }
+
+    [data-theme="lilac"] {
+      --paper: 232, 220, 250;
+      --accent: #614982;
+    }
+
+    [data-theme="oat"] {
+      --paper: 244, 228, 207;
+      --accent: #69513d;
     }
 
     * {
@@ -38,9 +65,10 @@
       min-height: 100vh;
       margin: 0;
       color: var(--text);
-      background: var(--bg);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-      letter-spacing: 0;
+      background:
+        radial-gradient(ellipse at 0 0, rgba(var(--paper), .32), transparent 58%),
+        var(--bg);
+      font-family: "Segoe UI", system-ui, sans-serif;
     }
 
     button,
@@ -55,26 +83,114 @@
       cursor: pointer;
     }
 
-    .app {
-      width: min(100%, 460px);
-      min-height: 100vh;
-      margin: 0 auto;
-      background: var(--bg);
+    .note-dock {
+      width: min(440px, 100%);
+      padding: max(12px, env(safe-area-inset-top)) 12px 12px max(12px, env(safe-area-inset-left));
       position: relative;
     }
 
-    @media (min-width: 780px) {
-      body {
-        padding: 28px 0;
-      }
+    .note-dock:has(.app[hidden]) {
+      width: fit-content;
+    }
 
-      .app {
-        min-height: calc(100vh - 56px);
-        border: 1px solid rgba(0, 0, 0, 0.08);
-        border-radius: 8px;
-        box-shadow: var(--shadow);
-        overflow: hidden;
-      }
+    .note-toggle {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--note);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 3px 12px rgba(48, 34, 44, .08);
+    }
+
+    .note-toggle svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .app {
+      max-height: calc(100dvh - 74px - env(safe-area-inset-top));
+      overflow: auto;
+      scrollbar-width: thin;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--note);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .theme-picker {
+      position: relative;
+    }
+
+    .theme-picker summary {
+      list-style: none;
+      cursor: pointer;
+    }
+
+    .theme-picker summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .theme-options {
+      position: absolute;
+      z-index: 1;
+      top: calc(100% + 7px);
+      right: 0;
+      display: flex;
+      gap: 5px;
+      margin: 0;
+      padding: 7px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface);
+      box-shadow: 0 8px 18px rgba(48, 34, 44, .12);
+    }
+
+    .theme-option {
+      position: relative;
+      padding: 4px;
+      cursor: pointer;
+    }
+
+    .theme-option input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+    }
+
+    .theme-option span {
+      width: 22px;
+      height: 22px;
+      display: block;
+      border: 1px solid rgba(63, 46, 58, .24);
+      border-radius: 50%;
+      background: rgb(var(--paper));
+    }
+
+    .theme-option input:checked + span,
+    .theme-option input:focus-visible + span {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
     }
 
     .topbar {
@@ -82,8 +198,8 @@
       top: 0;
       z-index: 5;
       padding: calc(14px + env(safe-area-inset-top)) 18px 12px;
-      background: rgba(255, 236, 243, 0.90);
-      border-bottom: 1px solid rgba(234, 220, 226, 0.88);
+      background: rgba(var(--paper), .92);
+      border-bottom: 1px solid var(--line);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
     }
@@ -108,7 +224,7 @@
 
     h1 {
       margin: 0;
-      font-size: 31px;
+      font-size: clamp(24px, 6vw, 29px);
       line-height: 1.08;
       font-weight: 720;
       letter-spacing: 0;
@@ -127,7 +243,7 @@
       gap: 4px;
       margin-top: 14px;
       padding: 3px;
-      background: #ffecf3;
+      background: var(--tint);
       border-radius: 8px;
     }
 
@@ -155,13 +271,13 @@
       display: inline-grid;
       place-items: center;
       color: var(--accent);
-      background: #ffe0eb;
+      background: var(--tint);
       border-radius: 999px;
       transition: transform 120ms ease, background 120ms ease, opacity 120ms ease;
     }
 
     .icon-button:hover {
-      background: #ffd5e4;
+      background: rgb(var(--paper));
     }
 
     .icon-button:active {
@@ -193,7 +309,7 @@
       display: grid;
       place-items: center;
       color: var(--text);
-      background: #ffe0eb;
+      background: var(--tint);
       border-radius: 999px;
     }
 
@@ -202,7 +318,7 @@
       height: 36px;
       padding: 0 12px;
       color: var(--text);
-      background: #ffe0eb;
+      background: var(--tint);
       border: 1px solid transparent;
       border-radius: 8px;
       outline: 0;
@@ -210,13 +326,13 @@
     }
 
     main {
-      padding: 16px 14px 86px;
+      padding: 16px 14px 24px;
     }
 
     .compose {
       padding: 12px;
       background: var(--surface);
-      border: 1px solid rgba(216, 216, 222, 0.92);
+      border: 1px solid var(--line);
       border-radius: 8px;
     }
 
@@ -233,7 +349,7 @@
       padding: 0 14px;
       color: var(--text);
       background: var(--surface-soft);
-      border: 1px solid rgba(216, 216, 222, 0.92);
+      border: 1px solid var(--line);
       border-radius: 8px;
       outline: 0;
     }
@@ -242,8 +358,8 @@
     .field:focus,
     textarea:focus,
     select:focus {
-      border-color: rgba(255, 148, 185, 0.72);
-      box-shadow: 0 0 0 3px rgba(255, 148, 185, 0.18);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--tint);
     }
 
     .add-button {
@@ -331,7 +447,7 @@
       width: 100%;
       color: var(--text);
       background: var(--surface-soft);
-      border: 1px solid rgba(216, 216, 222, 0.92);
+      border: 1px solid var(--line);
       border-radius: 8px;
       outline: 0;
     }
@@ -349,7 +465,7 @@
       gap: 4px;
       margin: 14px 0 10px;
       padding: 3px;
-      background: #ffecf3;
+      background: var(--tint);
       border-radius: 8px;
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
@@ -379,7 +495,7 @@
       margin: 0;
       padding: 12px;
       background: var(--surface);
-      border: 1px solid rgba(216, 216, 222, 0.92);
+      border: 1px solid var(--line);
       border-radius: 8px;
     }
 
@@ -405,7 +521,7 @@
       min-height: 30px;
       padding: 0 10px;
       color: var(--accent);
-      background: #ffe0eb;
+      background: var(--tint);
       border-radius: 999px;
       font-size: 13px;
       font-weight: 620;
@@ -432,7 +548,7 @@
       align-items: start;
       padding: 9px 8px;
       background: var(--surface-soft);
-      border: 1px solid rgba(216, 216, 222, 0.72);
+      border: 1px solid var(--line);
       border-radius: 8px;
     }
 
@@ -460,7 +576,7 @@
       gap: 12px;
       padding: 12px;
       background: var(--surface);
-      border: 1px solid rgba(216, 216, 222, 0.92);
+      border: 1px solid var(--line);
       border-radius: 8px;
     }
 
@@ -516,7 +632,7 @@
       min-height: 66px;
       padding: 12px 10px;
       background: var(--surface);
-      border: 1px solid rgba(216, 216, 222, 0.92);
+      border: 1px solid var(--line);
       border-radius: 8px;
     }
 
@@ -593,7 +709,7 @@
 
     .mini-button:hover {
       color: var(--accent);
-      background: rgba(255, 148, 185, 0.18);
+      background: var(--tint);
     }
 
     .mini-button.danger:hover {
@@ -702,7 +818,7 @@
 
     .secondary {
       color: var(--accent);
-      background: #ffe0eb;
+      background: var(--tint);
     }
 
     .toast {
@@ -729,19 +845,19 @@
     }
 
     .floating-panel {
-      position: fixed;
-      right: max(14px, env(safe-area-inset-right));
-      bottom: max(14px, env(safe-area-inset-bottom));
+      position: absolute;
+      top: 106px;
+      left: 20px;
       z-index: 20;
-      width: min(360px, calc(100vw - 28px));
+      width: min(360px, calc(100vw - 40px));
       max-height: min(70vh, 560px);
       display: grid;
       gap: 10px;
       padding: 12px;
-      background: rgba(255, 255, 255, 0.92);
-      border: 1px solid rgba(216, 216, 222, 0.92);
-      border-radius: 8px;
-      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.20);
+      background: rgba(var(--paper), .92);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
     }
@@ -795,7 +911,7 @@
       align-items: start;
       padding: 9px 8px;
       background: var(--surface-soft);
-      border: 1px solid rgba(216, 216, 222, 0.72);
+      border: 1px solid var(--line);
       border-radius: 8px;
     }
 
@@ -834,154 +950,188 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="toolbar">
-        <div class="titleblock">
-          <h1 id="pageTitle">今天</h1>
-          <div class="date-line" id="dateLine"></div>
+  <div class="note-dock" id="noteDock">
+    <button class="note-toggle" id="noteToggle" type="button" aria-controls="noteApp" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14v10l-4 4H5z"/><path d="M15 19v-4h4M8 9h8M8 13h4"/></svg>
+      to-do-list
+    </button>
+    <div class="app" id="noteApp" hidden>
+      <header class="topbar">
+        <div class="toolbar">
+          <div class="titleblock">
+            <h1 id="pageTitle">今天</h1>
+            <div class="date-line" id="dateLine"></div>
+          </div>
+          <div class="top-actions">
+            <details class="theme-picker" id="themePicker">
+              <summary class="icon-button" title="便签颜色" aria-label="便签颜色">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 1.4-3.4 1.1 1.1 0 0 1 .8-1.9H17A4 4 0 0 0 21 12a9 9 0 0 0-9-9Z"/><path d="M7.5 12h.01M9.5 8h.01M14 7.5h.01M17 11h.01"/></svg>
+              </summary>
+              <div class="theme-options" role="group" aria-label="便签颜色">
+                <label class="theme-option" data-theme="rose" title="藕粉">
+                  <input type="radio" name="note-theme" value="rose" aria-label="藕粉">
+                  <span aria-hidden="true"></span>
+                </label>
+                <label class="theme-option" data-theme="butter" title="奶黄">
+                  <input type="radio" name="note-theme" value="butter" aria-label="奶黄">
+                  <span aria-hidden="true"></span>
+                </label>
+                <label class="theme-option" data-theme="sage" title="鼠尾草绿">
+                  <input type="radio" name="note-theme" value="sage" aria-label="鼠尾草绿">
+                  <span aria-hidden="true"></span>
+                </label>
+                <label class="theme-option" data-theme="lilac" title="淡紫">
+                  <input type="radio" name="note-theme" value="lilac" aria-label="淡紫">
+                  <span aria-hidden="true"></span>
+                </label>
+                <label class="theme-option" data-theme="oat" title="燕麦米">
+                  <input type="radio" name="note-theme" value="oat" aria-label="燕麦米">
+                  <span aria-hidden="true"></span>
+                </label>
+              </div>
+            </details>
+            <button class="icon-button" id="floatBtn" type="button" title="悬浮窗" aria-label="悬浮窗">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 9h6"/><path d="M9 13h4"/></svg>
+            </button>
+          </div>
         </div>
-        <div class="top-actions">
-          <button class="icon-button" id="floatBtn" type="button" title="悬浮窗" aria-label="悬浮窗">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 9h6"/><path d="M9 13h4"/></svg>
+        <nav class="view-nav" aria-label="页面">
+          <button class="view-tab active" type="button" data-view="tasks">待办</button>
+          <button class="view-tab" type="button" data-view="clipboard">剪贴板</button>
+          <button class="view-tab" type="button" data-view="tools">工具</button>
+        </nav>
+        <div class="date-picker" id="datePicker">
+          <button class="date-step" id="prevDay" type="button" title="前一天" aria-label="前一天">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <input class="date-input" id="viewDate" type="date" aria-label="日期">
+          <button class="date-step" id="nextDay" type="button" title="后一天" aria-label="后一天">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section class="view-panel" id="tasksView">
+          <form class="compose" id="taskForm" autocomplete="off">
+            <div class="compose-line">
+              <input class="task-input" id="taskText" type="text" placeholder="写下要做的事" maxlength="120" aria-label="任务内容">
+              <button class="add-button" id="addBtn" type="submit" title="添加" aria-label="添加">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+              </button>
+            </div>
+            <div class="compose-options">
+              <label class="switch-row">
+                <span>本周每天</span>
+                <input id="weekRepeat" type="checkbox">
+              </label>
+            </div>
+          </form>
+
+          <nav class="tabs" aria-label="筛选">
+            <button class="tab active" type="button" data-filter="today">当日</button>
+            <button class="tab" type="button" data-filter="all">全部</button>
+            <button class="tab" type="button" data-filter="postponed">延期</button>
+          </nav>
+
+          <section class="task-list" id="taskList" aria-label="任务列表"></section>
+          <div class="empty" id="emptyState" hidden>这一天很清爽</div>
+        </section>
+
+        <section class="view-panel" id="clipboardView" hidden>
+          <section class="clipboard" aria-label="剪贴板">
+            <div class="clipboard-head">
+              <h2 class="section-title">剪贴板</h2>
+              <div class="small-actions">
+                <button class="text-button" id="pasteClip" type="button">粘贴</button>
+                <button class="text-button danger" id="clearClips" type="button">清空</button>
+              </div>
+            </div>
+            <textarea id="clipInput" maxlength="2000" placeholder="粘贴到这里" aria-label="剪贴板内容"></textarea>
+            <div class="clip-list" id="clipList"></div>
+          </section>
+        </section>
+
+        <section class="view-panel" id="toolsView" hidden>
+          <section class="tools" aria-label="工具">
+            <article class="tool-card">
+              <div class="tool-head">
+                <h2 class="section-title">划线价</h2>
+                <label class="switch-row">
+                  <span>监听</span>
+                  <input id="watchAdd30" type="checkbox">
+                </label>
+              </div>
+              <div class="tool-note">复制数字后自动填入，并复制 +30 后的结果</div>
+              <div class="calc-grid">
+                <div class="calc-row">
+                  <label for="add30Input">输入</label>
+                  <input class="field" id="add30Input" type="text" inputmode="decimal" autocomplete="off">
+                </div>
+                <div class="calc-actions">
+                  <div class="calc-row">
+                    <label for="add30Output">结果</label>
+                    <input class="field" id="add30Output" type="text" readonly>
+                  </div>
+                  <button class="text-button" id="copyAdd30" type="button">复制</button>
+                </div>
+              </div>
+            </article>
+
+            <article class="tool-card">
+              <div class="tool-head">
+                <h2 class="section-title">换美金</h2>
+                <label class="switch-row">
+                  <span>监听</span>
+                  <input id="watchUsd" type="checkbox">
+                </label>
+              </div>
+              <div class="tool-note">复制数字后自动填入，并复制整数结果</div>
+              <div class="calc-grid">
+                <div class="calc-row">
+                  <label for="usdInput">输入</label>
+                  <input class="field" id="usdInput" type="text" inputmode="decimal" autocomplete="off">
+                </div>
+                <div class="calc-row">
+                  <label for="usdIntOutput">整数</label>
+                  <input class="field" id="usdIntOutput" type="text" readonly>
+                </div>
+                <div class="calc-actions">
+                  <div class="calc-row">
+                    <label for="usdDecOutput">两位</label>
+                    <input class="field" id="usdDecOutput" type="text" readonly>
+                  </div>
+                  <button class="text-button" id="copyUsd" type="button">复制</button>
+                </div>
+              </div>
+            </article>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <section class="floating-panel" id="floatingPanel" hidden aria-label="悬浮窗">
+      <div class="floating-head">
+        <div class="floating-title" id="floatingTitle">今天</div>
+        <div class="small-actions">
+          <button class="mini-button" id="pinFloat" type="button" title="置顶" aria-label="置顶">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 4 6 6"/><path d="m10 8 6 6"/><path d="M8 10 4 14l6 6 4-4"/><path d="m14 4-4 4"/><path d="M4 20 9 15"/></svg>
+          </button>
+          <button class="mini-button" id="closeFloat" type="button" title="关闭" aria-label="关闭">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
           </button>
         </div>
       </div>
-      <nav class="view-nav" aria-label="页面">
-        <button class="view-tab active" type="button" data-view="tasks">待办</button>
-        <button class="view-tab" type="button" data-view="clipboard">剪贴板</button>
-        <button class="view-tab" type="button" data-view="tools">工具</button>
-      </nav>
-      <div class="date-picker" id="datePicker">
-        <button class="date-step" id="prevDay" type="button" title="前一天" aria-label="前一天">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+      <form class="mini-form" id="miniForm" autocomplete="off">
+        <input class="task-input" id="miniInput" type="text" placeholder="写下要做的事" maxlength="120" aria-label="悬浮窗任务内容">
+        <button class="add-button" id="miniAdd" type="submit" title="添加" aria-label="添加">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
         </button>
-        <input class="date-input" id="viewDate" type="date" aria-label="日期">
-        <button class="date-step" id="nextDay" type="button" title="后一天" aria-label="后一天">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-        </button>
-      </div>
-    </header>
+      </form>
+      <div class="floating-list" id="floatingList"></div>
+    </section>
 
-    <main>
-      <section class="view-panel" id="tasksView">
-        <form class="compose" id="taskForm" autocomplete="off">
-          <div class="compose-line">
-            <input class="task-input" id="taskText" type="text" placeholder="写下要做的事" maxlength="120" aria-label="任务内容">
-            <button class="add-button" id="addBtn" type="submit" title="添加" aria-label="添加">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
-            </button>
-          </div>
-          <div class="compose-options">
-            <label class="switch-row">
-              <span>本周每天</span>
-              <input id="weekRepeat" type="checkbox">
-            </label>
-          </div>
-        </form>
-
-        <nav class="tabs" aria-label="筛选">
-          <button class="tab active" type="button" data-filter="today">当日</button>
-          <button class="tab" type="button" data-filter="all">全部</button>
-          <button class="tab" type="button" data-filter="postponed">延期</button>
-        </nav>
-
-        <section class="task-list" id="taskList" aria-label="任务列表"></section>
-        <div class="empty" id="emptyState" hidden>这一天很清爽</div>
-      </section>
-
-      <section class="view-panel" id="clipboardView" hidden>
-        <section class="clipboard" aria-label="剪贴板">
-          <div class="clipboard-head">
-            <h2 class="section-title">剪贴板</h2>
-            <div class="small-actions">
-              <button class="text-button" id="pasteClip" type="button">粘贴</button>
-              <button class="text-button danger" id="clearClips" type="button">清空</button>
-            </div>
-          </div>
-          <textarea id="clipInput" maxlength="2000" placeholder="粘贴到这里" aria-label="剪贴板内容"></textarea>
-          <div class="clip-list" id="clipList"></div>
-        </section>
-      </section>
-
-      <section class="view-panel" id="toolsView" hidden>
-        <section class="tools" aria-label="工具">
-          <article class="tool-card">
-            <div class="tool-head">
-              <h2 class="section-title">划线价</h2>
-              <label class="switch-row">
-                <span>监听</span>
-                <input id="watchAdd30" type="checkbox">
-              </label>
-            </div>
-            <div class="tool-note">复制数字后自动填入，并复制 +30 后的结果</div>
-            <div class="calc-grid">
-              <div class="calc-row">
-                <label for="add30Input">输入</label>
-                <input class="field" id="add30Input" type="text" inputmode="decimal" autocomplete="off">
-              </div>
-              <div class="calc-actions">
-                <div class="calc-row">
-                  <label for="add30Output">结果</label>
-                  <input class="field" id="add30Output" type="text" readonly>
-                </div>
-                <button class="text-button" id="copyAdd30" type="button">复制</button>
-              </div>
-            </div>
-          </article>
-
-          <article class="tool-card">
-            <div class="tool-head">
-              <h2 class="section-title">换美金</h2>
-              <label class="switch-row">
-                <span>监听</span>
-                <input id="watchUsd" type="checkbox">
-              </label>
-            </div>
-            <div class="tool-note">复制数字后自动填入，并复制整数结果</div>
-            <div class="calc-grid">
-              <div class="calc-row">
-                <label for="usdInput">输入</label>
-                <input class="field" id="usdInput" type="text" inputmode="decimal" autocomplete="off">
-              </div>
-              <div class="calc-row">
-                <label for="usdIntOutput">整数</label>
-                <input class="field" id="usdIntOutput" type="text" readonly>
-              </div>
-              <div class="calc-actions">
-                <div class="calc-row">
-                  <label for="usdDecOutput">两位</label>
-                  <input class="field" id="usdDecOutput" type="text" readonly>
-                </div>
-                <button class="text-button" id="copyUsd" type="button">复制</button>
-              </div>
-            </div>
-          </article>
-        </section>
-      </section>
-    </main>
   </div>
-
-  <section class="floating-panel" id="floatingPanel" hidden aria-label="悬浮窗">
-    <div class="floating-head">
-      <div class="floating-title" id="floatingTitle">今天</div>
-      <div class="small-actions">
-        <button class="mini-button" id="pinFloat" type="button" title="置顶" aria-label="置顶">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 4 6 6"/><path d="m10 8 6 6"/><path d="M8 10 4 14l6 6 4-4"/><path d="m14 4-4 4"/><path d="M4 20 9 15"/></svg>
-        </button>
-        <button class="mini-button" id="closeFloat" type="button" title="关闭" aria-label="关闭">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-        </button>
-      </div>
-    </div>
-    <form class="mini-form" id="miniForm" autocomplete="off">
-      <input class="task-input" id="miniInput" type="text" placeholder="写下要做的事" maxlength="120" aria-label="悬浮窗任务内容">
-      <button class="add-button" id="miniAdd" type="submit" title="添加" aria-label="添加">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
-      </button>
-    </form>
-    <div class="floating-list" id="floatingList"></div>
-  </section>
 
   <div class="sheet-mask" id="sheetMask" aria-hidden="true">
     <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
@@ -1017,6 +1167,7 @@
   <script>
     const storageKey = "dailyTodo.tasks.v1";
     const clipboardKey = "dailyTodo.clipboard.v1";
+    const themeKey = "dailyTodo.theme.v1";
     const formatDate = new Intl.DateTimeFormat("zh-CN", {
       month: "long",
       day: "numeric",
@@ -1030,6 +1181,10 @@
     });
 
     const els = {
+      noteDock: document.querySelector("#noteDock"),
+      noteToggle: document.querySelector("#noteToggle"),
+      noteApp: document.querySelector("#noteApp"),
+      themePicker: document.querySelector("#themePicker"),
       pageTitle: document.querySelector("#pageTitle"),
       dateLine: document.querySelector("#dateLine"),
       viewTabs: document.querySelectorAll(".view-tab"),
@@ -1096,6 +1251,10 @@
     let lastToolSeenClipboard = "";
     let lastToolCopied = "";
     let pipWindow = null;
+    let noteCloseTimer;
+    let notePinned = false;
+    let pointerInsideNote = false;
+    let suppressNoteHover = false;
 
     const icons = {
       check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg>',
@@ -1113,8 +1272,97 @@
       els.miniAdd.disabled = true;
       clearExpiredClips();
       scheduleClipClear();
+      applyTheme(loadTheme());
+      bindNoteEvents();
       bindEvents();
       render();
+    }
+
+    function bindNoteEvents() {
+      els.noteDock.addEventListener("pointerenter", event => {
+        if (event.pointerType !== "mouse") return;
+        pointerInsideNote = true;
+        clearTimeout(noteCloseTimer);
+        if (!suppressNoteHover) setNoteOpen(true);
+      });
+
+      els.noteDock.addEventListener("pointerleave", event => {
+        if (event.pointerType !== "mouse") return;
+        pointerInsideNote = false;
+        suppressNoteHover = false;
+        scheduleNoteClose();
+      });
+
+      els.noteDock.addEventListener("focusout", scheduleNoteClose);
+      els.noteToggle.addEventListener("click", () => {
+        notePinned = !notePinned;
+        suppressNoteHover = !notePinned && pointerInsideNote;
+        setNoteOpen(notePinned);
+      });
+
+      els.noteDock.addEventListener("keydown", event => {
+        if (event.key !== "Escape" || els.noteApp.hidden || els.sheetMask.classList.contains("open")) return;
+        if (els.themePicker.open) {
+          els.themePicker.open = false;
+          els.themePicker.querySelector("summary").focus();
+          return;
+        }
+        notePinned = false;
+        suppressNoteHover = pointerInsideNote;
+        els.noteToggle.focus();
+        setNoteOpen(false);
+      });
+
+      els.themePicker.addEventListener("change", event => {
+        applyTheme(event.target.value);
+        try {
+          localStorage.setItem(themeKey, event.target.value);
+        } catch {
+          // The selected theme still applies for this session.
+        }
+      });
+    }
+
+    function scheduleNoteClose() {
+      clearTimeout(noteCloseTimer);
+      noteCloseTimer = setTimeout(() => {
+        const active = document.activeElement;
+        const editing = els.noteDock.contains(active) &&
+          active.matches("input, textarea, select, [contenteditable], :focus-visible") &&
+          active !== els.noteToggle;
+        if (pointerInsideNote || notePinned || editing || els.sheetMask.classList.contains("open")) return;
+        setNoteOpen(false);
+      }, 220);
+    }
+
+    function setNoteOpen(open) {
+      els.noteApp.hidden = !open;
+      els.noteToggle.setAttribute("aria-expanded", String(open));
+      if (!open) {
+        els.themePicker.open = false;
+      }
+      renderFloat();
+    }
+
+    function loadTheme() {
+      try {
+        return localStorage.getItem(themeKey);
+      } catch {
+        return null;
+      }
+    }
+
+    function applyTheme(theme) {
+      const options = [...els.themePicker.querySelectorAll('input[name="note-theme"]')];
+      const option = options.find(input => input.value === theme) || options[0];
+      option.checked = true;
+      document.documentElement.dataset.theme = option.value;
+      if (pipWindow && !pipWindow.closed) {
+        const styles = getComputedStyle(document.documentElement);
+        for (const variable of ["--paper", "--accent", "--text", "--muted", "--line"]) {
+          pipWindow.document.documentElement.style.setProperty(variable, styles.getPropertyValue(variable).trim());
+        }
+      }
     }
 
     function bindEvents() {
@@ -1535,9 +1783,9 @@
     }
 
     function renderFloat() {
-      els.floatingPanel.hidden = !state.floatingOpen;
+      els.floatingPanel.hidden = !state.floatingOpen || els.noteApp.hidden;
       els.floatingTitle.textContent = state.viewDate === todayISO() ? "今天" : formatDate.format(parseISO(state.viewDate));
-      if (!state.floatingOpen) return;
+      if (els.floatingPanel.hidden) return;
       const tasks = state.tasks
         .filter(task => task.date === state.viewDate && task.status !== "canceled")
         .sort((a, b) => statusOrder(a.status) - statusOrder(b.status) || b.createdAt.localeCompare(a.createdAt));
@@ -1653,6 +1901,8 @@
         pipWindow.addEventListener("pagehide", () => {
           pipWindow = null;
         });
+        pipWindow.document.title = "to-do-list";
+        applyTheme(document.documentElement.dataset.theme);
         renderPipWindow();
       } catch {
         toast("置顶未开启");
@@ -1668,20 +1918,20 @@
       doc.body.innerHTML = `
         <style>
           * { box-sizing: border-box; }
-          body { margin: 0; padding: 12px; color: #1c1c1e; background: #f2f2f7; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif; }
+          body { margin: 0; padding: 12px; color: var(--text); background: rgb(var(--paper)); font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif; }
           .head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
           h1 { margin: 0; font-size: 18px; line-height: 1.2; }
           button { border: 0; cursor: pointer; font: inherit; }
           form { display: grid; grid-template-columns: 1fr 38px; gap: 8px; margin-bottom: 10px; }
-          input { min-width: 0; height: 38px; padding: 0 12px; border: 1px solid #d8d8de; border-radius: 8px; background: #fff; outline: 0; }
-          .add, .round { display: grid; place-items: center; background: #007aff; color: white; border-radius: 999px; }
+          input { min-width: 0; height: 38px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255, 255, 255, .75); outline: 0; }
+          .add, .round { display: grid; place-items: center; background: var(--accent); color: white; border-radius: 999px; }
           .add { width: 38px; height: 38px; font-size: 24px; }
-          .round { width: 28px; height: 28px; background: rgba(118,118,128,.12); color: #6e6e73; }
+          .round { width: 28px; height: 28px; background: rgba(118,118,128,.12); color: var(--muted); }
           .list { display: grid; gap: 8px; }
-          .task { display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: start; padding: 9px 8px; border: 1px solid #d8d8de; border-radius: 8px; background: #fff; }
+          .task { display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: start; padding: 9px 8px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255, 255, 255, .75); }
           .title { margin: 4px 0 0; font-size: 14px; line-height: 1.35; word-break: break-word; }
-          .done .title { color: #6e6e73; text-decoration: line-through; }
-          .check { width: 24px; height: 24px; border: 2px solid #d8d8de; background: transparent; border-radius: 999px; }
+          .done .title { color: var(--muted); text-decoration: line-through; }
+          .check { width: 24px; height: 24px; border: 2px solid var(--line); background: transparent; border-radius: 999px; }
           .done .check { background: #34c759; border-color: #34c759; }
           .actions { display: flex; gap: 6px; }
         </style>
@@ -1763,6 +2013,7 @@
     }
 
     function closeSheet() {
+      scheduleNoteClose();
       state.editingId = null;
       els.sheetMask.classList.remove("open");
       els.sheetMask.setAttribute("aria-hidden", "true");

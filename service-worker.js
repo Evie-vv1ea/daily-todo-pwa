@@ -1,4 +1,4 @@
-const CACHE_NAME = "daily-todo-v2";
+const CACHE_NAME = "daily-todo-v3";
 const APP_FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-256.png"];
 
 self.addEventListener("install", event => {
