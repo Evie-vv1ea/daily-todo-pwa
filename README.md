@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./icon-192.png" alt="to-do-list logo" width="76" height="76" />
+<img src="./assets/logo.png" alt="to-do-list logo" width="76" height="76" />
 
 # to-do-list
 
