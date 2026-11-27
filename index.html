@@ -915,6 +915,410 @@
       }
 
     }
+    @font-face {
+      font-family: "Fusion Pixel SC";
+      src: url("./fusion-pixel-sc.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    .desktop-note[data-theme="rose"] {
+      --paper: 255, 240, 243;
+      --paper-hex: #FFF0F3;
+      --border: #DFB2BE;
+      --ink: #523A42;
+      --accent: #B86B82;
+      --accent-rgb: 184, 107, 130;
+    }
+
+    .desktop-note[data-theme="butter"] {
+      --paper: 255, 248, 227;
+      --paper-hex: #FFF8E3;
+      --border: #E2CA8F;
+      --ink: #54462A;
+      --accent: #AD8736;
+      --accent-rgb: 173, 135, 54;
+    }
+
+    .desktop-note[data-theme="sage"] {
+      --paper: 239, 246, 238;
+      --paper-hex: #EFF6EE;
+      --border: #B3CAAF;
+      --ink: #354839;
+      --accent: #5A8560;
+      --accent-rgb: 90, 133, 96;
+    }
+
+    .desktop-note[data-theme="lilac"] {
+      --paper: 244, 239, 251;
+      --paper-hex: #F4EFFB;
+      --border: #C8B7DF;
+      --ink: #453958;
+      --accent: #7E64A8;
+      --accent-rgb: 126, 100, 168;
+    }
+
+    .desktop-note[data-theme="oat"] {
+      --paper: 248, 243, 236;
+      --paper-hex: #F8F3EC;
+      --border: #D6C6B2;
+      --ink: #4B3F35;
+      --accent: #8E735A;
+      --accent-rgb: 142, 115, 90;
+    }
+
+    .desktop-note[data-theme="sky"] {
+      --paper: 238, 245, 252;
+      --paper-hex: #EEF5FC;
+      --border: #B2CAE0;
+      --ink: #334759;
+      --accent: #5A84AB;
+      --accent-rgb: 90, 132, 171;
+    }
+
+    html.desktop-note {
+      --text: var(--ink);
+      --muted: var(--ink);
+      --line: var(--border);
+      --tint: rgba(var(--accent-rgb), .11);
+      min-height: 0;
+      background: var(--paper-hex, #fff0f3);
+    }
+
+    .desktop-note body,
+    .desktop-note .app {
+      min-height: 0;
+      color: var(--ink);
+      background: var(--paper-hex);
+    }
+
+    .desktop-note body,
+    .desktop-note :is(button, input, textarea, select, h1, h2, h3, p, label, .section-title, .tool-note, .sheet-title, .view-heading h2, .chip, .empty) {
+      font-family: "Fusion Pixel SC", "Microsoft YaHei UI", monospace;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 1.4;
+      letter-spacing: .03em;
+    }
+
+    .desktop-note .note-dock,
+    .desktop-note .note-dock:has(.app[hidden]) {
+      width: 100%;
+      padding: 0;
+    }
+
+    .desktop-note .note-toggle {
+      display: none;
+    }
+
+    .desktop-note .app {
+      width: 100%;
+      max-height: 100dvh;
+      padding: 7px 11px;
+      border: 1px solid var(--border);
+      border-radius: 0;
+      box-shadow: inset 1px 1px 0 rgba(255, 255, 255, .75), inset -1px -1px 0 rgba(var(--accent-rgb), .12);
+      backdrop-filter: none;
+    }
+
+    .desktop-note .app[data-quick] {
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    .desktop-note main { padding: 0; }
+
+    .desktop-note .app[data-quick] main {
+      height: calc(100dvh - 16px);
+      padding: 0;
+      overflow-y: auto;
+      scrollbar-width: none;
+      scroll-snap-type: y mandatory;
+      overflow-anchor: none;
+    }
+
+    .desktop-note .app[data-quick] main:has(.task-view-hint:not([hidden])) {
+      scroll-padding-top: 20px;
+    }
+
+    .desktop-note .task-view-hint {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      display: block;
+      width: 100%;
+      height: 20px;
+      padding: 0 2px;
+      border-bottom: 1px dotted rgba(var(--accent-rgb), .18);
+      color: var(--accent);
+      background: var(--paper-hex);
+      text-align: left;
+    }
+
+    .desktop-note .app[data-quick] :is(.view-panel, .task-list) {
+      display: contents;
+    }
+
+    .desktop-note .app[data-quick] :is(.quick-blank, .task-card) {
+      display: grid;
+      grid-template-columns: 14px minmax(0, 1fr);
+      gap: 6px;
+      align-items: center;
+      height: 28px;
+      min-height: 28px;
+      padding: 0;
+      border: 0;
+      border-bottom: 1px dotted rgba(var(--accent-rgb), .18);
+      border-radius: 0;
+      background: transparent;
+      scroll-snap-align: start;
+    }
+
+    .desktop-note .quick-blank { cursor: text; }
+
+    .desktop-note .app[data-quick] .check {
+      display: grid;
+      place-items: center;
+      width: 14px;
+      height: 24px;
+      padding: 0;
+      margin: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .desktop-note .app[data-quick] :is(.quick-square, .check-box) {
+      display: grid;
+      place-items: center;
+      justify-self: center;
+      width: 7px;
+      height: 7px;
+      border: 1px solid var(--accent);
+      border-radius: 0;
+      background: rgba(255, 255, 255, .6);
+    }
+
+    .desktop-note .app[data-quick] .quick-square {
+      opacity: .38;
+      border-style: dashed;
+    }
+
+    .desktop-note .app[data-quick] .check:hover .check-box {
+      background: rgba(var(--accent-rgb), .16);
+    }
+
+    .desktop-note .app[data-quick] .check svg { display: none; }
+
+    .desktop-note .app[data-quick] .done .check .check-box {
+      background: var(--accent);
+      color: var(--paper-hex);
+    }
+
+    .check-box { display: none; }
+
+    .desktop-note .app[data-quick] .done .check .pixel-check {
+      display: block;
+      width: 5px;
+      height: 5px;
+    }
+
+    .desktop-note .app[data-quick] .task-title {
+      margin: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .desktop-note .task-inline {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 5px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .desktop-note .task-inline-input {
+      width: 100%;
+      min-width: 0;
+      height: 27px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      caret-color: var(--accent);
+      text-overflow: ellipsis;
+    }
+
+    .desktop-note .task-inline-input:focus { text-overflow: clip; }
+
+    .desktop-note .task-note-dot {
+      width: 3px;
+      height: 3px;
+      background: var(--accent);
+      opacity: .45;
+    }
+
+    .desktop-note .task-card.done :is(.task-title, .task-inline-input) {
+      color: var(--ink);
+      opacity: .46;
+      text-decoration: line-through;
+      text-decoration-thickness: 1px;
+      text-decoration-color: rgba(var(--accent-rgb), .72);
+    }
+
+    .desktop-note .app[data-quick] .meta { display: none; }
+
+    .desktop-note .quick-blank .task-input {
+      height: 27px;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      outline: 0;
+      background: transparent;
+      box-shadow: none;
+      caret-color: var(--accent);
+    }
+
+    .desktop-note :is(input, textarea, select, button):is(:focus, :focus-visible) {
+      outline: 0;
+      box-shadow: none;
+    }
+
+    .desktop-note :is(.task-input, .field, .date-input, textarea, select):focus {
+      border-color: var(--accent);
+    }
+
+    .desktop-note button:focus-visible { color: var(--accent); }
+
+    .desktop-note .view-heading { height: 24px; margin-bottom: 4px; }
+    .desktop-note .view-heading h2 { display: none; }
+    .desktop-note #backToTasks {
+      height: 24px;
+      min-height: 24px;
+      padding: 0 2px;
+      border: 0;
+      background: transparent;
+    }
+
+    .desktop-note .app:not([data-quick]) #taskList { display: none; }
+
+    .desktop-note :is(.compose, .clipboard, .tool-card, .clip-item, .sheet, .field, .date-input, .tabs, .tab, .theme-options, .text-button, .primary, .secondary, .icon-button, .date-step, .mini-button, textarea, select) {
+      border-radius: 0;
+    }
+
+    .desktop-note :is(.compose, .sheet) {
+      background: rgba(255, 255, 255, .62);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+
+    .desktop-note :is(.tool-card, .clipboard) {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .desktop-note :is(.text-button, .secondary, .date-step, .icon-button) {
+      border: 1px solid var(--border);
+    }
+
+    .desktop-note .app:not([data-quick]) .task-card {
+      border-radius: 0;
+      background: rgba(255, 255, 255, .52);
+      border: 1px solid var(--border);
+    }
+
+    .desktop-note .app:not([data-quick]) .check {
+      border-radius: 0;
+      border: 1px solid var(--accent);
+    }
+
+    .desktop-note .toast {
+      min-width: 0;
+      padding: 2px 8px;
+      bottom: 6px;
+      border-radius: 0;
+      background: var(--accent);
+      color: var(--paper-hex);
+      font-size: 12px;
+      opacity: 0;
+    }
+
+    .desktop-note .toast.show { opacity: 1; }
+
+    .desktop-note body:has(.app[data-quick]) .toast {
+      width: 1px;
+      height: 1px;
+      min-width: 0;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+
+    .desktop-note .sheet-mask {
+      align-items: start;
+      padding: 3px 5px;
+      background: var(--paper-hex);
+      overflow: auto;
+    }
+
+    .desktop-note .sheet-mask .sheet {
+      padding: 2px 6px;
+      background: var(--paper-hex);
+    }
+
+    .desktop-note .sheet-mask :is(.sheet-head, .sheet-actions, .sheet-content-field) { display: none; }
+    .desktop-note .sheet-mask .form-grid { gap: 3px; }
+    .desktop-note .sheet-mask label { gap: 1px; line-height: 12px; }
+    .desktop-note #editDate { height: 28px; }
+    .desktop-note #editNote {
+      height: 76px;
+      min-height: 0;
+      padding: 4px 6px;
+      resize: none;
+    }
+
+    .desktop-note .sheet-mask :is(#editDate, #editNote) { border: 1px solid var(--border); }
+    .desktop-note .sheet-mask :is(#editDate, #editNote):focus { border-color: var(--accent); }
+    .desktop-note body:has(.sheet-mask.open) .app { visibility: hidden; }
+
+    .tool-card { display: grid; gap: 6px; }
+    .tool-head { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; min-height: 22px; }
+    .tool-back { justify-self: start; padding: 0; color: var(--accent); background: transparent; }
+    .tool-head .section-title { margin: 0; }
+    .tool-head .tool-watch {
+      justify-self: end;
+      appearance: none;
+      width: 26px;
+      height: 14px;
+      margin: 0;
+      padding: 1px;
+      border: 1px solid var(--accent);
+      border-radius: 0;
+      background: var(--paper-hex, white);
+      cursor: pointer;
+    }
+    .tool-watch::before { content: ""; display: block; width: 10px; height: 10px; background: var(--accent); }
+    .tool-watch:checked { background: var(--accent); }
+    .tool-watch:checked::before { transform: translateX(12px); background: var(--paper-hex, white); }
+    .tool-watch:focus-visible { outline: 1px dotted var(--accent); outline-offset: 2px; }
+    .tool-card .tool-note { opacity: .65; }
+    .tool-field { display: grid; grid-template-columns: 42px minmax(0, 1fr); align-items: center; }
+    .tool-card .field { height: 25px; min-width: 0; padding: 0 5px; background: #fff; border: 1px solid var(--line); border-radius: 0; }
+    .tool-card .field:focus { border-color: var(--accent); }
+    .tool-card .field[readonly] { cursor: copy; }
+    .tool-results { display: grid; gap: 6px; }
+    .tool-result { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 5px; }
+    .tool-result .text-button { min-height: 25px; padding: 0 5px; border: 1px solid var(--line); border-radius: 0; background: transparent; }
+    .tool-results-split { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tool-results-split .tool-result { grid-template-columns: minmax(0, 1fr) auto; }
+    .tool-results-split .tool-result label { grid-column: 1 / -1; }
+    .desktop-note #add30Card { min-height: 120px; }
+    .desktop-note #usdCard { min-height: 152px; }
+    .desktop-note .tool-card { align-content: space-between; }
+    .desktop-note .sheet-mask[data-mode="note"] .sheet-date-field { display: none; }
   </style>
 </head>
 <body>
@@ -929,6 +1333,7 @@
           <h2 id="viewTitle"></h2>
           <button class="text-button" id="backToTasks" type="button">返回待办</button>
         </div>
+        <button class="task-view-hint" id="taskViewHint" type="button" hidden></button>
         <section class="view-panel" id="tasksView">
           <div class="note-controls" id="noteControls" hidden>
             <form class="compose" id="taskForm" hidden autocomplete="off">
@@ -980,10 +1385,22 @@
                 <input type="radio" name="note-theme" value="oat" aria-label="燕麦米">
                 <span aria-hidden="true"></span>
               </label>
+              <label class="theme-option" data-theme="sky" title="冰川奶蓝" hidden>
+                <input type="radio" name="note-theme" value="sky" aria-label="冰川奶蓝">
+                <span aria-hidden="true"></span>
+              </label>
             </div>
           </div>
 
           <section class="task-list" id="taskList" aria-label="任务列表"></section>
+          <div class="quick-blank" id="firstBlank" hidden>
+            <span class="quick-square" aria-hidden="true"></span>
+            <input class="task-input" id="firstDraft" type="text" maxlength="120" aria-label="任务内容">
+          </div>
+          <div class="quick-blank" id="quickBlank" hidden>
+            <span class="quick-square" aria-hidden="true"></span>
+            <input class="task-input" id="secondDraft" type="text" maxlength="120" aria-label="第二行任务">
+          </div>
           <div class="empty" id="emptyState" hidden>没有任务</div>
         </section>
 
@@ -1003,54 +1420,40 @@
 
         <section class="view-panel" id="toolsView" hidden>
           <section class="tools" aria-label="工具">
-            <article class="tool-card">
-              <div class="tool-head">
+            <article class="tool-card" id="add30Card">
+              <header class="tool-head">
+                <button class="tool-back" type="button">← 返回</button>
                 <h2 class="section-title">划线价</h2>
-                <label class="switch-row">
-                  <span>监听</span>
-                  <input id="watchAdd30" type="checkbox">
-                </label>
-              </div>
-              <div class="tool-note">复制数字后自动填入，并复制 +30 后的结果</div>
-              <div class="calc-grid">
-                <div class="calc-row">
-                  <label for="add30Input">输入</label>
-                  <input class="field" id="add30Input" type="text" inputmode="decimal" autocomplete="off">
-                </div>
-                <div class="calc-actions">
-                  <div class="calc-row">
-                    <label for="add30Output">结果</label>
-                    <input class="field" id="add30Output" type="text" readonly>
-                  </div>
+                <input class="tool-watch" id="watchAdd30" type="checkbox" aria-label="监听剪贴板">
+              </header>
+              <div class="tool-note">复制数字自动 +30 并复制</div>
+              <label class="tool-field">输入<input class="field" id="add30Input" type="text" inputmode="decimal" autocomplete="off"></label>
+              <div class="tool-results">
+                <div class="tool-result">
+                  <label for="add30Output">结果 (+30)</label>
+                  <input class="field" id="add30Output" type="text" readonly aria-label="结果 (+30)，点击复制">
                   <button class="text-button" id="copyAdd30" type="button">复制</button>
                 </div>
               </div>
             </article>
-
-            <article class="tool-card">
-              <div class="tool-head">
+            <article class="tool-card" id="usdCard">
+              <header class="tool-head">
+                <button class="tool-back" type="button">← 返回</button>
                 <h2 class="section-title">换美金</h2>
-                <label class="switch-row">
-                  <span>监听</span>
-                  <input id="watchUsd" type="checkbox">
-                </label>
-              </div>
-              <div class="tool-note">复制数字后自动填入，并复制整数结果</div>
-              <div class="calc-grid">
-                <div class="calc-row">
-                  <label for="usdInput">输入</label>
-                  <input class="field" id="usdInput" type="text" inputmode="decimal" autocomplete="off">
-                </div>
-                <div class="calc-row">
+                <input class="tool-watch" id="watchUsd" type="checkbox" aria-label="监听剪贴板">
+              </header>
+              <div class="tool-note">复制数字自动换算并复制整数</div>
+              <label class="tool-field">输入<input class="field" id="usdInput" type="text" inputmode="decimal" autocomplete="off"></label>
+              <div class="tool-results tool-results-split">
+                <div class="tool-result">
                   <label for="usdIntOutput">整数</label>
-                  <input class="field" id="usdIntOutput" type="text" readonly>
-                </div>
-                <div class="calc-actions">
-                  <div class="calc-row">
-                    <label for="usdDecOutput">两位</label>
-                    <input class="field" id="usdDecOutput" type="text" readonly>
-                  </div>
+                  <input class="field" id="usdIntOutput" type="text" readonly aria-label="整数结果，点击复制">
                   <button class="text-button" id="copyUsd" type="button">复制</button>
+                </div>
+                <div class="tool-result">
+                  <label for="usdDecOutput">两位</label>
+                  <input class="field" id="usdDecOutput" type="text" readonly aria-label="两位小数结果，点击复制">
+                  <button class="text-button" id="copyUsdDecimals" type="button">复制</button>
                 </div>
               </div>
             </article>
@@ -1097,11 +1500,12 @@
       <hr role="separator">
       <button type="button" role="menuitem" data-command="theme">便签颜色</button>
       <button type="button" role="menuitem" data-command="float">打开悬浮窗</button>
+      <button type="button" role="menuitem" data-command="exit" hidden>退出桌面便签</button>
     </div>
   </div>
 
   <div class="sheet-mask" id="sheetMask" aria-hidden="true">
-    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <section class="sheet" id="editSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
       <div class="sheet-head">
         <div class="sheet-title" id="sheetTitle">任务</div>
         <button class="icon-button" id="closeSheet" type="button" title="关闭" aria-label="关闭">
@@ -1109,17 +1513,17 @@
         </button>
       </div>
       <form id="editForm" class="form-grid">
-        <label>
+        <label class="sheet-content-field">
           内容
           <input class="field" id="editTitle" type="text" maxlength="120" required>
         </label>
-        <label>
+        <label class="sheet-date-field">
           日期
           <input class="field" id="editDate" type="date" required>
         </label>
         <label>
           备注
-          <textarea id="editNote" maxlength="500"></textarea>
+          <textarea id="editNote" maxlength="500" placeholder="写点备注…"></textarea>
         </label>
         <div class="sheet-actions">
           <button class="secondary" type="button" id="deleteFromSheet">删除</button>
@@ -1129,12 +1533,15 @@
     </section>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <div class="toast" id="toast" role="status"></div>
 
   <script>
     const storageKey = "dailyTodo.tasks.v1";
     const clipboardKey = "dailyTodo.clipboard.v1";
     const themeKey = "dailyTodo.theme.v1";
+    const opacityKey = "dailyTodo.desktopOpacity.v1";
+    const pinKey = "dailyTodo.desktopPinned.v1";
+    const desktopHost = window.chrome?.webview || window.desktopNote;
     const formatDate = new Intl.DateTimeFormat("zh-CN", {
       month: "long",
       day: "numeric",
@@ -1151,6 +1558,7 @@
       noteControls: document.querySelector("#noteControls"),
       noteFilter: document.querySelector("#noteFilter"),
       viewHeading: document.querySelector("#viewHeading"),
+      taskViewHint: document.querySelector("#taskViewHint"),
       viewTitle: document.querySelector("#viewTitle"),
       backToTasks: document.querySelector("#backToTasks"),
       datePicker: document.querySelector("#datePicker"),
@@ -1164,9 +1572,16 @@
       tabs: document.querySelectorAll(".tab"),
       taskList: document.querySelector("#taskList"),
       emptyState: document.querySelector("#emptyState"),
+      main: document.querySelector("#noteApp main"),
+      firstBlank: document.querySelector("#firstBlank"),
+      firstDraft: document.querySelector("#firstDraft"),
+      quickBlank: document.querySelector("#quickBlank"),
+      secondDraft: document.querySelector("#secondDraft"),
       tasksView: document.querySelector("#tasksView"),
       clipboardView: document.querySelector("#clipboardView"),
       toolsView: document.querySelector("#toolsView"),
+      add30Card: document.querySelector("#add30Card"),
+      usdCard: document.querySelector("#usdCard"),
       clipInput: document.querySelector("#clipInput"),
       pasteClip: document.querySelector("#pasteClip"),
       clearClips: document.querySelector("#clearClips"),
@@ -1182,6 +1597,7 @@
       sheetMask: document.querySelector("#sheetMask"),
       closeSheet: document.querySelector("#closeSheet"),
       editForm: document.querySelector("#editForm"),
+      editSheet: document.querySelector("#editSheet"),
       editTitle: document.querySelector("#editTitle"),
       editDate: document.querySelector("#editDate"),
       editNote: document.querySelector("#editNote"),
@@ -1194,6 +1610,7 @@
       usdIntOutput: document.querySelector("#usdIntOutput"),
       usdDecOutput: document.querySelector("#usdDecOutput"),
       copyUsd: document.querySelector("#copyUsd"),
+      copyUsdDecimals: document.querySelector("#copyUsdDecimals"),
       watchUsd: document.querySelector("#watchUsd"),
       toast: document.querySelector("#toast")
     };
@@ -1222,6 +1639,9 @@
     let suppressNoteHover = false;
     let contextTaskId = null;
     let contextAnchor = null;
+    let desktopFocusTarget = null;
+    let desktopOpacity = "0.88";
+    let desktopPinned = false;
 
     const icons = {
       check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg>',
@@ -1241,7 +1661,264 @@
       applyTheme(loadTheme());
       bindNoteEvents();
       bindEvents();
+      if (desktopHost) bindDesktop();
       render();
+    }
+
+    function bindDesktop() {
+      document.documentElement.classList.add("desktop-note");
+      applyTheme(loadTheme());
+      setNoteOpen(true);
+      const opacity = localStorage.getItem(opacityKey);
+      applyDesktopOpacity(["0.80", "0.88", "0.95"].includes(opacity) ? opacity : "0.88");
+      desktopPinned = localStorage.getItem(pinKey) === "true";
+      desktopHost.postMessage("pin:" + Number(desktopPinned));
+      els.backToTasks.textContent = "← 返回";
+      els.sheetMask.querySelector(".sheet").removeAttribute("aria-labelledby");
+      els.editSheet.setAttribute("aria-label", "备注");
+      els.editTitle.required = false;
+      els.taskViewHint.addEventListener("click", () => {
+        state.filter = "today";
+        state.viewDate = todayISO();
+        setNoteView("tasks");
+      });
+
+      for (const draft of [els.firstDraft, els.secondDraft]) {
+        draft.parentElement.addEventListener("pointerdown", event => {
+          if (event.button !== 0) return;
+          if (event.target !== draft) {
+            event.preventDefault();
+            draft.focus({ preventScroll: true });
+          }
+          requestDesktopFocus(draft);
+        });
+        draft.addEventListener("keydown", event => {
+          if (event.isComposing || event.keyCode === 229) return;
+          if (moveQuickFocus(event, draft)) return;
+          if (event.key !== "Enter") return;
+          event.preventDefault();
+          if (!draft.value.trim()) return;
+          const value = draft.value;
+          draft.value = "";
+          if (draft === els.firstDraft) {
+            els.firstDraft.value = els.secondDraft.value;
+            els.secondDraft.value = "";
+          }
+          if (state.filter === "postponed") state.filter = "today";
+          addTaskFromText(value, { repeatWeek: false });
+          focusQuickDraft(false);
+        });
+      }
+
+      bindInlineTaskEditing();
+      for (const field of [els.editNote]) {
+        field.addEventListener("input", saveDesktopSheet);
+        field.addEventListener("change", saveDesktopSheet);
+      }
+
+      document.addEventListener("keydown", event => {
+        if (event.key !== "Escape" || event.isComposing) return;
+        if (els.sheetMask.classList.contains("open")) {
+          closeSheet();
+        } else if (state.view !== "tasks" || state.noteControl) {
+          setNoteView("tasks");
+        } else {
+          return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+      }, true);
+
+      let lastSize;
+      let lastHold;
+      let lastPanel;
+      let frame;
+      function updateWindow() {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => {
+          const editor = els.sheetMask.classList.contains("open");
+          const panel = !els.noteApp.hasAttribute("data-quick");
+          const rows = Math.min(12, Math.max(2, els.taskList.childElementCount + 1));
+          const hintHeight = els.taskViewHint.hidden ? 0 : 20;
+          const size = editor ? 108
+            : panel ? Math.min(440, els.main.scrollHeight + 16) : 16 + hintHeight + rows * 28;
+          const active = document.activeElement;
+          const typing = els.noteDock.contains(active) && active.matches("input, textarea, select");
+          if (size !== lastSize) {
+            desktopHost.postMessage("height:" + size);
+            lastSize = size;
+          }
+          if (panel !== lastPanel) {
+            desktopHost.postMessage("panel:" + Number(panel));
+            lastPanel = panel;
+          }
+          if (typing !== lastHold) {
+            desktopHost.postMessage(typing ? "hold" : "release");
+            lastHold = typing;
+          }
+        });
+      }
+
+      new MutationObserver(updateWindow).observe(document.body, {
+        subtree: true, childList: true, attributes: true,
+        attributeFilter: ["class", "hidden", "data-quick", "data-mode"]
+      });
+      document.addEventListener("focusin", updateWindow);
+      document.addEventListener("focusout", updateWindow);
+      desktopHost.addEventListener("message", event => {
+        if (typeof event.data !== "string") return;
+        if (event.data.startsWith("command:")) {
+          runDesktopCommand(event.data.slice(8));
+        } else if (event.data.startsWith("notesave:")) {
+          saveNativeNote(event.data.slice(9));
+        } else if (event.data === "close-sheet") {
+          closeSheet();
+        } else if (event.data === "focus-ready") {
+          const target = desktopFocusTarget;
+          desktopFocusTarget = null;
+          if (target?.isConnected && !target.closest("[hidden]")) target.focus({ preventScroll: true });
+        } else if (event.data === "shown") {
+          els.main.scrollTop = 0;
+        } else if (event.data === "hidden") {
+          desktopFocusTarget = null;
+          if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+          els.main.scrollTop = 0;
+        }
+      });
+      updateWindow();
+    }
+
+    function quickFields() {
+      return [...els.taskList.querySelectorAll(".task-inline-input"),
+        ...[els.firstDraft, els.secondDraft].filter(input => !input.closest("[hidden]"))];
+    }
+
+    function focusQuickField(input) {
+      input.focus({ preventScroll: true });
+      input.scrollIntoView({ block: "nearest" });
+    }
+
+    function moveQuickFocus(event, input) {
+      const direction = event.key === "ArrowUp" ? -1 : event.key === "ArrowDown" ? 1 : 0;
+      if (!direction) return false;
+      event.preventDefault();
+      const fields = quickFields();
+      const next = fields[fields.indexOf(input) + direction];
+      if (next) focusQuickField(next);
+      return true;
+    }
+
+    function bindInlineTaskEditing() {
+      const baselines = new WeakMap();
+      const findInlineTask = input => findTask(input.closest("[data-task-id]").dataset.taskId);
+      function persist(input, finishing = false) {
+        const task = findInlineTask(input);
+        if (!task) return;
+        const title = input.value.trim() || (finishing ? baselines.get(input) ?? task.title : "");
+        if (finishing) input.value = title;
+        if (!title || task.title === title) return;
+        task.title = title;
+        task.updatedAt = new Date().toISOString();
+        saveTasks();
+      }
+
+      els.taskList.addEventListener("pointerdown", event => {
+        if (event.button === 0 && event.target.matches(".task-inline-input")) requestDesktopFocus(event.target);
+      });
+      els.taskList.addEventListener("focusin", event => {
+        if (event.target.matches(".task-inline-input")) baselines.set(event.target, event.target.value);
+      });
+      els.taskList.addEventListener("input", event => {
+        if (!event.isComposing && event.target.matches(".task-inline-input")) persist(event.target);
+      });
+      els.taskList.addEventListener("focusout", event => {
+        if (!event.target.matches(".task-inline-input")) return;
+        persist(event.target, true);
+        baselines.delete(event.target);
+      });
+      els.taskList.addEventListener("keydown", event => {
+        const input = event.target;
+        if (!input.matches(".task-inline-input") || event.isComposing || event.keyCode === 229) return;
+        if (moveQuickFocus(event, input)) return;
+        if (event.key === "Escape") {
+          event.preventDefault();
+          event.stopPropagation();
+          input.value = baselines.get(input) ?? input.value;
+          input.blur();
+        } else if (event.key === "Enter") {
+          event.preventDefault();
+          persist(input, true);
+          const fields = quickFields();
+          const next = fields[fields.indexOf(input) + 1];
+          if (next) focusQuickField(next);
+          else input.blur();
+        } else if (event.key === "Backspace" && input.value === "" && !event.repeat) {
+          event.preventDefault();
+          const index = quickFields().indexOf(input);
+          const task = findInlineTask(input);
+          if (!task) return;
+          deleteTask(task.id);
+          const previous = quickFields()[Math.max(0, index - 1)];
+          if (previous) focusQuickField(previous);
+        }
+      });
+    }
+
+    function focusQuickDraft(activate = true) {
+      const draft = els.firstDraft;
+      draft.focus({ preventScroll: true });
+      els.main.scrollTop = els.main.scrollHeight;
+      if (activate) requestDesktopFocus(draft);
+    }
+
+    function applyDesktopOpacity(value) {
+      desktopOpacity = value;
+      localStorage.setItem(opacityKey, value);
+      desktopHost.postMessage("opacity:" + value);
+    }
+
+    function runDesktopCommand(command) {
+      const [group, value] = command.split("/");
+      if (group === "theme") {
+        applyTheme(value);
+        localStorage.setItem(themeKey, value);
+      } else if (group === "opacity") {
+        applyDesktopOpacity(value);
+      } else if (group === "filter") {
+        state.filter = value;
+        setNoteView("tasks");
+      } else if (group === "calendar" || group === "taskDay") {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(value || "") || toISO(parseISO(value)) !== value) return;
+        if (group === "calendar") {
+          state.viewDate = value;
+          state.filter = "today";
+          setNoteView("tasks");
+        } else {
+          const task = findTask(contextTaskId);
+          contextTaskId = null;
+          if (!task) return;
+          setTaskDay(task, value);
+          render();
+        }
+      } else if (group === "tool") {
+        if (value === "add30" || value === "usd") setNoteView("tools", value);
+      } else if (command === "new") {
+        if (state.editingId) closeSheet();
+        setNoteView("tasks");
+        focusQuickDraft();
+      } else if (command === "pin") {
+        desktopPinned = !desktopPinned;
+        localStorage.setItem(pinKey, String(desktopPinned));
+        desktopHost.postMessage("pin:" + Number(desktopPinned));
+      } else if (command === "clearDone") {
+        const doneIds = new Set(getVisibleTasks().filter(task => task.status === "done").map(task => task.id));
+        if (!doneIds.size) return;
+        state.tasks = state.tasks.filter(task => !doneIds.has(task.id));
+        saveTasks();
+        render();
+      } else {
+        runNoteCommand(command);
+      }
     }
 
     function bindNoteEvents() {
@@ -1280,6 +1957,7 @@
           setNoteView("tasks");
           return;
         }
+        if (desktopHost) return;
         notePinned = false;
         suppressNoteHover = pointerInsideNote;
         els.noteToggle.focus();
@@ -1301,6 +1979,7 @@
     }
 
     function scheduleNoteClose() {
+      if (desktopHost) return;
       clearTimeout(noteCloseTimer);
       noteCloseTimer = setTimeout(() => {
         const active = document.activeElement;
@@ -1313,6 +1992,7 @@
     }
 
     function setNoteOpen(open) {
+      if (desktopHost) open = true;
       els.noteApp.hidden = !open;
       els.noteToggle.setAttribute("aria-expanded", String(open));
       if (!open) {
@@ -1327,7 +2007,8 @@
     function openNoteMenu(event) {
       const keyboard = event.type === "keydown";
       const target = event.target;
-      if (target.closest("input, textarea, select, [contenteditable]") && !keyboard) return;
+      const quickDraft = desktopHost && (target === els.firstDraft || target === els.secondDraft || target.matches(".task-inline-input"));
+      if (target.closest("input, textarea, select, [contenteditable]") && !keyboard && !quickDraft) return;
       event.preventDefault();
       if (event.type === "keydown") event.stopPropagation();
       setNoteOpen(true);
@@ -1336,17 +2017,38 @@
       els.taskCommands.hidden = !contextTaskId;
       els.noteMenu.querySelector('[data-command="tasks"]').hidden = state.view === "tasks" && !state.noteControl;
       els.noteMenu.querySelector('[data-command="float"]').textContent = state.floatingOpen ? "关闭悬浮窗" : "打开悬浮窗";
-      els.noteMenu.hidden = false;
       const anchor = target.getBoundingClientRect();
       const x = keyboard ? anchor.left + 8 : event.clientX;
       const y = keyboard ? anchor.bottom + 4 : event.clientY;
+      if (desktopHost) {
+        const contextTask = findTask(contextTaskId);
+        const taskDate = contextTask?.date || "";
+        desktopHost.postMessage("notemeta:" + [
+          encodeNoteBase64(contextTaskId || ""), encodeNoteBase64(contextTask?.note || "")
+        ].join("|"));
+        const dotDates = new Set(state.tasks.filter(task => task.status !== "done" && task.status !== "canceled").map(task => task.date));
+        desktopHost.postMessage("calmeta:" + [state.viewDate, taskDate, [...dotDates].join(",")].join("|"));
+        const menuState = [
+          contextTaskId ? 1 : 0,
+          document.documentElement.dataset.theme,
+          desktopOpacity,
+          state.filter,
+          state.view !== "tasks" || state.noteControl ? 1 : 0
+        ];
+        desktopHost.postMessage(["menu", Math.round(x), Math.round(y), ...menuState].join(":"));
+        return;
+      }
+      els.noteMenu.hidden = false;
       els.noteMenu.style.left = Math.max(8, Math.min(x, window.innerWidth - els.noteMenu.offsetWidth - 8)) + "px";
       els.noteMenu.style.top = Math.max(8, Math.min(y, window.innerHeight - els.noteMenu.offsetHeight - 8)) + "px";
       getNoteMenuItems()[0]?.focus();
     }
 
-    function getNoteMenuItems() {
-      return [...els.noteMenu.querySelectorAll('[role="menuitem"]')].filter(button => !button.closest("[hidden]"));
+    function getNoteMenuItems(ignoreHiddenContainer = null) {
+      return [...els.noteMenu.querySelectorAll('[role="menuitem"]')].filter(button => {
+        const hiddenParent = button.closest("[hidden]");
+        return !hiddenParent || hiddenParent === ignoreHiddenContainer;
+      });
     }
 
     function closeNoteMenu(restoreFocus = false) {
@@ -1382,15 +2084,22 @@
 
     function handleNoteCommand(event) {
       const button = event.target.closest("[data-command]");
-      if (!button) return;
-      const command = button.dataset.command;
+      if (button) runNoteCommand(button.dataset.command);
+    }
+
+    function runNoteCommand(command) {
       const taskId = contextTaskId;
+      contextTaskId = null;
       closeNoteMenu();
       if (command === "edit" || command === "delay" || command === "delete") {
         runTaskAction(taskId, command);
         return;
       }
-      if (command === "float") {
+      if (command === "exit") {
+        desktopHost?.postMessage("exit");
+        return;
+      }
+      if (command === "float" || command === "closeFloat") {
         state.floatingOpen = !state.floatingOpen;
         renderFloat();
         (state.floatingOpen ? els.miniInput : els.noteApp).focus();
@@ -1404,6 +2113,11 @@
     }
 
     function setNoteView(view, control = null) {
+      if (desktopHost && view === "tools") {
+        clearTimeout(toastTimer);
+        els.toast.classList.remove("show");
+        els.toast.textContent = "";
+      }
       state.view = view;
       state.noteControl = control;
       render();
@@ -1411,9 +2125,20 @@
         add: els.taskText,
         date: els.viewDate,
         filter: els.noteFilter.querySelector(".tab.active"),
-        theme: els.themePicker.querySelector("input:checked")
+        theme: els.themePicker.querySelector("input:checked"),
+        add30: els.add30Input,
+        usd: els.usdInput
       };
-      (targets[control] || (view === "tasks" ? els.noteApp : els.backToTasks)).focus();
+      const target = targets[control] || (view === "tasks" ? els.noteApp : els.backToTasks);
+      target.focus();
+      if (desktopHost && view === "tasks" && !control) els.main.scrollTop = 0;
+      if (control === "add" || control === "date" || view === "clipboard" || view === "tools") requestDesktopFocus(target);
+    }
+
+    function requestDesktopFocus(target) {
+      if (!desktopHost) return;
+      desktopFocusTarget = target;
+      desktopHost.postMessage("focus");
     }
 
     function loadTheme() {
@@ -1428,7 +2153,13 @@
       const options = [...els.themePicker.querySelectorAll('input[name="note-theme"]')];
       const option = options.find(input => input.value === theme) || options[0];
       option.checked = true;
-      document.documentElement.dataset.theme = option.value;
+      const root = document.documentElement;
+      root.dataset.theme = option.value;
+      if (root.classList.contains("desktop-note")) {
+        const styles = getComputedStyle(root);
+        const colors = ["--paper", "--border", "--ink", "--accent"].map(key => styles.getPropertyValue(key).trim());
+        desktopHost.postMessage("paper:" + colors.join(":"));
+      }
       if (pipWindow && !pipWindow.closed) {
         const styles = getComputedStyle(document.documentElement);
         for (const variable of ["--paper", "--accent", "--text", "--muted", "--line"]) {
@@ -1528,6 +2259,10 @@
       });
 
       els.add30Input.addEventListener("input", updateAdd30);
+      els.toolsView.querySelectorAll(".tool-back").forEach(button => button.addEventListener("click", () => setNoteView("tasks")));
+      for (const output of [els.add30Output, els.usdIntOutput, els.usdDecOutput]) {
+        output.addEventListener("click", () => copyText(output.value));
+      }
       els.copyAdd30.addEventListener("click", () => copyText(els.add30Output.value));
       els.watchAdd30.addEventListener("change", () => {
         if (els.watchAdd30.checked) enableToolWatch("add30");
@@ -1535,6 +2270,7 @@
       });
       els.usdInput.addEventListener("input", updateUsd);
       els.copyUsd.addEventListener("click", () => copyText(els.usdIntOutput.value));
+      els.copyUsdDecimals.addEventListener("click", () => copyText(els.usdDecOutput.value));
       els.watchUsd.addEventListener("change", () => {
         if (els.watchUsd.checked) enableToolWatch("usd");
         else if (state.toolWatch === "usd") disableToolWatch();
@@ -1542,7 +2278,8 @@
     }
 
     function addTask() {
-      addTaskFromText(els.taskText.value, { repeatWeek: state.weekRepeat, focusInput: els.taskText });
+      const repeatWeek = state.weekRepeat && (!desktopHost || state.noteControl === "add");
+      addTaskFromText(els.taskText.value, { repeatWeek, focusInput: els.taskText });
     }
 
     function addTaskFromText(text, options = {}) {
@@ -1562,16 +2299,17 @@
         createdAt: now,
         updatedAt: now
       }));
-      state.tasks.unshift(...tasks);
+      if (desktopHost) state.tasks.push(...tasks);
+      else state.tasks.unshift(...tasks);
       state.viewDate = baseDate;
       els.viewDate.value = state.viewDate;
-      options.focusInput.value = "";
+      if (options.focusInput) options.focusInput.value = "";
       els.addBtn.disabled = true;
       els.miniAdd.disabled = true;
       saveTasks();
       render();
       toast(dates.length > 1 ? "已添加本周" : "已添加");
-      options.focusInput.focus();
+      options.focusInput?.focus();
     }
 
     function inferTask(text) {
@@ -1614,7 +2352,10 @@
 
       const visible = getVisibleTasks();
       els.taskList.innerHTML = visible.map(renderTask).join("");
-      els.emptyState.hidden = visible.length > 0;
+      els.emptyState.hidden = Boolean(desktopHost) || visible.length > 0;
+      const compact = els.noteApp.hasAttribute("data-quick");
+      els.firstBlank.hidden = !compact;
+      els.quickBlank.hidden = !compact || visible.length > 0;
       renderClips();
       renderFloat();
       renderPipWindow();
@@ -1626,7 +2367,9 @@
       els.tasksView.hidden = !inTasks;
       els.clipboardView.hidden = state.view !== "clipboard";
       els.toolsView.hidden = state.view !== "tools";
-      els.viewHeading.hidden = inTasks && !control;
+      els.viewHeading.hidden = (inTasks && !control) || state.view === "tools";
+      els.add30Card.hidden = state.view === "tools" && control === "usd";
+      els.usdCard.hidden = state.view === "tools" && control === "add30";
       els.viewTitle.textContent = {
         clipboard: "剪贴板",
         tools: "工具",
@@ -1635,6 +2378,15 @@
         filter: "筛选任务",
         theme: "便签颜色"
       }[inTasks ? control : state.view] || "";
+      const quickEntry = Boolean(desktopHost) && inTasks && !control;
+      els.noteApp.toggleAttribute("data-quick", quickEntry);
+      const otherDay = state.viewDate !== todayISO();
+      const filterLabel = { all: "全部", postponed: "延期" }[state.filter];
+      els.taskViewHint.hidden = !quickEntry || (!otherDay && !filterLabel);
+      if (!els.taskViewHint.hidden) {
+        els.taskViewHint.textContent = [otherDay && shortDate(state.viewDate), filterLabel,
+          otherDay ? "返回今天" : "返回当日"].filter(Boolean).join(" · ");
+      }
       els.noteControls.hidden = !inTasks || !control;
       els.taskForm.hidden = control !== "add";
       els.datePicker.hidden = control !== "date";
@@ -1649,6 +2401,10 @@
       if (state.filter === "postponed") list = list.filter(task => task.status === "postponed");
       return list.sort((a, b) => {
         if (a.date !== b.date) return a.date > b.date ? 1 : -1;
+        if (desktopHost) {
+          const completed = Number(a.status === "done") - Number(b.status === "done");
+          return completed || String(a.createdAt || "").localeCompare(String(b.createdAt || ""));
+        }
         const statusRank = statusOrder(a.status) - statusOrder(b.status);
         if (statusRank) return statusRank;
         return b.createdAt.localeCompare(a.createdAt);
@@ -1675,13 +2431,18 @@
       const postponedChip = status === "postponed" ? '<span class="chip postponed">延期</span>' : "";
       const dateChip = state.filter !== "today" ? `<span class="chip">${escapeHTML(shortDate(task.date))}</span>` : "";
       const metadata = dateChip + postponedChip;
+      const inline = desktopHost && els.noteApp.hasAttribute("data-quick");
+      const note = task.note || "";
+      const title = inline
+        ? `<div class="task-inline"><input class="task-inline-input" type="text" maxlength="120" aria-label="任务内容" value="${escapeHTML(task.title)}">${note.trim() ? `<span class="task-note-dot" title="${escapeHTML(note)}" aria-label="有备注"></span>` : ""}</div>`
+        : `<div><p class="task-title">${escapeHTML(task.title)}</p>${metadata ? `<div class="meta">${metadata}</div>` : ""}</div>`;
       return `
         <article class="task-card ${escapeHTML(status)}" data-task-id="${escapeHTML(task.id)}">
-          <button class="check" type="button" data-action="toggle" title="完成" aria-label="完成">${icons.check}</button>
-          <div>
-            <p class="task-title">${escapeHTML(task.title)}</p>
-            ${metadata ? `<div class="meta">${metadata}</div>` : ""}
-          </div>
+          <button class="check" type="button" data-action="toggle" title="${status === "done" ? "标记未完成" : "完成"}" aria-label="${status === "done" ? "标记未完成" : "完成"}" aria-pressed="${status === "done"}">
+            ${icons.check}
+            <span class="check-box" aria-hidden="true"><svg class="pixel-check" viewBox="0 0 5 5" shape-rendering="crispEdges" fill="currentColor"><path d="M0 2h1v1H0zm1 1h1v1H1zm1-1h1v1H2zm1-1h1v1H3zm1-1h1v1H4z"/></svg></span>
+          </button>
+          ${title}
         </article>
       `;
     }
@@ -2055,6 +2816,39 @@
       toast("已删除");
     }
 
+    function encodeNoteBase64(value) {
+      return btoa(Array.from(new TextEncoder().encode(value), byte => String.fromCharCode(byte)).join(""));
+    }
+
+    function decodeNoteBase64(value) {
+      const bytes = Uint8Array.from(atob(value), character => character.charCodeAt(0));
+      return new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(bytes);
+    }
+
+    function saveNativeNote(payload) {
+      const fields = payload.split("|");
+      if (fields.length !== 2) return;
+      let task, note;
+      try {
+        task = findTask(decodeNoteBase64(fields[0]));
+        note = decodeNoteBase64(fields[1]);
+      } catch {
+        return;
+      }
+      if (!task || (task.note || "") === note || note.length > 500) return;
+      task.note = note;
+      task.updatedAt = new Date().toISOString();
+      saveTasks();
+      render();
+    }
+
+    function setTaskDay(task, date) {
+      if (task.date === date) return;
+      task.date = date;
+      task.updatedAt = new Date().toISOString();
+      saveTasks();
+    }
+
     function openSheet(id) {
       const task = findTask(id);
       if (!task) return;
@@ -2062,19 +2856,50 @@
       els.editTitle.value = task.title;
       els.editDate.value = task.date;
       els.editNote.value = task.note || "";
+      els.sheetMask.dataset.mode = desktopHost ? "note" : "edit";
+      els.editSheet.hidden = false;
       els.sheetMask.classList.add("open");
       els.sheetMask.setAttribute("aria-hidden", "false");
-      setTimeout(() => els.editTitle.focus(), 0);
+      const field = desktopHost ? els.editNote : els.editTitle;
+      desktopHost?.postMessage("sheet:1");
+      setTimeout(() => {
+        if (state.editingId !== id) return;
+        field.focus();
+        requestDesktopFocus(field);
+      }, 0);
     }
 
     function closeSheet() {
+      if (!els.sheetMask.classList.contains("open")) return;
+      if (desktopHost && els.sheetMask.dataset.mode === "note") saveDesktopSheet();
       scheduleNoteClose();
       state.editingId = null;
       els.sheetMask.classList.remove("open");
+      delete els.sheetMask.dataset.mode;
       els.sheetMask.setAttribute("aria-hidden", "true");
+      if (desktopHost) {
+        if (els.sheetMask.contains(document.activeElement)) document.activeElement.blur();
+        desktopHost.postMessage("sheet:0");
+        render();
+      }
+    }
+
+    function saveDesktopSheet() {
+      if (!desktopHost || els.sheetMask.dataset.mode !== "note" || !els.sheetMask.classList.contains("open")) return;
+      const task = findTask(state.editingId);
+      if (!task) return;
+      const note = els.editNote.value.trim();
+      if ((task.note || "") === note) return;
+      task.note = note;
+      task.updatedAt = new Date().toISOString();
+      saveTasks();
     }
 
     function saveEdit() {
+      if (desktopHost) {
+        closeSheet();
+        return;
+      }
       const task = findTask(state.editingId);
       if (!task) return;
       task.title = els.editTitle.value.trim();
@@ -2200,7 +3025,7 @@
     }
   </script>
   <script>
-    if ("serviceWorker" in navigator) {
+    if (!window.chrome?.webview && !window.desktopNote && "serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("./service-worker.js").catch(error => {
           console.warn("离线功能注册失败：", error);

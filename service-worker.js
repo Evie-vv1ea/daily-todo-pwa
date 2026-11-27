@@ -1,5 +1,12 @@
-const CACHE_NAME = "daily-todo-v4";
-const APP_FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-256.png"];
+const CACHE_NAME = "daily-todo-v5";
+const APP_FILES = [
+  "./",
+  "./index.html",
+  "./fusion-pixel-sc.woff2",
+  "./manifest.webmanifest",
+  "./icon-192.png",
+  "./icon-256.png"
+];
 
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_FILES)));

@@ -1,13 +1,13 @@
 {
   "name": "to-do-list",
   "short_name": "to-do-list",
-  "description": "Offline personal task app",
+  "description": "极简奶油像素风 Ins 桌面便签 & 离线待办工具",
   "lang": "zh-CN",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f6efeb",
-  "theme_color": "#f6efeb",
+  "background_color": "#FFF0F3",
+  "theme_color": "#FFF0F3",
   "icons": [
     {
       "src": "./icon-192.png",

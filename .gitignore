@@ -1,0 +1,20 @@
+# Build artifacts & local runtime data
+*.exe
+*.dll
+*.pdb
+*.nupkg
+*.zip
+*.app/
+build/
+dist/
+Profile/
+TestProfile*/
+status.txt
+self-test.txt
+
+# OS & editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
