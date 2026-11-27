@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=to-do-list
+GenericName=Desktop Sticky Note
+Comment=Minimalist Cream-Pixel Desktop Sticky Note
+Exec=to-do-list --toggle
+Icon=to-do-list
+Terminal=false
+Categories=Utility;Office;
+StartupNotify=false

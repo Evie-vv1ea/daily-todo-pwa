@@ -8,6 +8,7 @@
 
 [![Windows](https://img.shields.io/badge/Windows-10%20%2F%2011-0078D6?style=flat-square&logo=windows&logoColor=white)](#windows-10--11)
 [![macOS](https://img.shields.io/badge/macOS-12%2B%20Native%20Swift-000000?style=flat-square&logo=apple&logoColor=white)](#macos-12)
+[![Linux](https://img.shields.io/badge/Linux-GTK3%20%2B%20WebKit2-FCC624?style=flat-square&logo=linux&logoColor=black)](#linux-x11--wayland)
 [![PWA](https://img.shields.io/badge/Web%20PWA-Live%20Demo-B86B82?style=flat-square&logo=googlechrome&logoColor=white)](https://evie-vv1ea.github.io/daily-todo-pwa/)
 [![Zero Electron](https://img.shields.io/badge/Native%20Shell-~84%20KB-5A8560?style=flat-square)](#架构与目录结构)
 [![License](https://img.shields.io/badge/License-MIT-7E64A8?style=flat-square)](./LICENSE)
@@ -31,7 +32,7 @@
 - 🧩 **不遮挡、不撑大的三级侧边交互** — `主便签（1 级）→ 主题配色右键菜单（2 级）→ 菜单旁弹出的紧凑月历 / 备注框（3 级）`。翻月、改期、写多行备注时，原便签始终清晰可见且尺寸纹丝不动。
 - ✍️ **记事本级原地编辑 & 自动长高** — 没任务时仅显示 2 行极简空白；输入回车自动顺延新增行（最多展开至 12 行后才滚动）；点击任意任务文字直接原地修改、自动保存，`↑ / ↓` 跨行跳转，清空后按 `Backspace` 直接删除。
 - 🧰 **内置日常效率小工具** — 右键即用 **每日自动清空剪贴板（20:00 清零）**、**划线价（+30）**、**换美金（×1.3405 整数/两位）**，支持剪贴板自动监听并一键回写结果。
-- ⚡ **零 Electron、100% 本地离线隐私** — Windows 端基于原生 C# WinForms + 系统 Edge WebView2（可执行文件仅 **~84 KB**），macOS 端基于原生 Swift AppKit + 系统 WKWebView，无任何账号登录、无任何云端上传。
+- ⚡ **零 Electron、100% 本地离线隐私** — Windows 端基于原生 C# WinForms + 系统 Edge WebView2（可执行文件仅 **~84 KB**），macOS 端基于原生 Swift AppKit + 系统 WKWebView，Linux 端基于原生 GTK 3 + 系统 WebKit2GTK（单文件仅 **~54 KB**），无任何账号登录、无任何云端上传。
 
 ---
 
@@ -39,7 +40,7 @@
 
 | 特性 | `to-do-list` | 传统 Electron 待办软件 | 浏览器网页版 |
 | :--- | :---: | :---: | :---: |
-| **原生外壳体积** | **~84 KB (Win) / 原生 Swift (Mac)** | 150 ~ 300 MB | 依赖浏览器窗口 |
+| **原生外壳体积** | **~84 KB (Win) / Swift (Mac) / ~54 KB (Linux)** | 150 ~ 300 MB | 依赖浏览器窗口 |
 | **日常桌面占位** | **0（隐身于左上角热区）** | 占任务栏 / Dock | 占标签页 |
 | **展开与收起动效** | **60fps 缓动滑入淡出（可打断反转）** | 窗口切换 | 手动切窗口 |
 | **编辑备注 / 切日期** | **三级侧边小界面，绝不覆盖主便签** | 弹窗遮挡列表 | 弹窗遮挡 |
@@ -140,6 +141,49 @@ bash ./macos/uninstall.sh
 
 ---
 
+### Linux (X11 / Wayland)
+
+> 原生 GTK 3 + WebKit2GTK（自动兼容 `WebKit2 4.1 / 4.0`，零 Electron 依赖、无需编译工具链），遵循 XDG 规范自动注册应用菜单与 `~/.config/autostart` 开机自启。
+> - **X11 桌面**：原生支持屏幕左上角热区悬停 60fps 丝滑呼出与自动收起。
+> - **Wayland 桌面**（GNOME / KDE / Hyprland 等）：支持单实例 `--toggle` 命令，可将 `~/.local/bin/to-do-list --toggle` 绑定为系统快捷键（如 `Super+T`）一键呼出/隐藏。
+
+**前置系统依赖（如尚未预装）**
+
+```bash
+# Ubuntu / Debian / Linux Mint（旧版 20.04/22.04 可将 4.1 替换为 4.0）
+sudo apt install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 gir1.2-webkit2-4.1
+
+# Fedora / RHEL
+sudo dnf install -y python3-gobject python3-cairo gtk3 webkit2gtk4.1
+
+# Arch / Manjaro
+sudo pacman -S --needed python-gobject python-cairo gtk3 webkit2gtk-4.1
+```
+
+**方式一：终端一键安装（推荐）**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Evie-vv1ea/daily-todo-pwa/main/linux/install.sh | bash
+```
+
+**方式二：克隆仓库本地安装**
+
+```bash
+git clone https://github.com/Evie-vv1ea/daily-todo-pwa.git
+cd daily-todo-pwa
+bash ./linux/install.sh
+```
+
+**卸载（默认保留本地任务数据）**
+
+```bash
+bash ./linux/uninstall.sh
+# 如需连同本地数据一起清除：
+bash ./linux/uninstall.sh --remove-data
+```
+
+---
+
 ### Web / PWA 浏览器版
 
 无需安装，直接访问在线版（支持 Chrome / Edge「安装为应用」离线使用）：
@@ -201,11 +245,11 @@ bash ./macos/uninstall.sh
 
 ## 🏗️ 架构与目录结构
 
-三端共享唯一前端单文件 [index.html](./index.html)，通过极简字符串消息协议（`window.chrome?.webview || window.desktopNote`）与系统原生外壳双向通信：
+全平台共享唯一前端单文件 [index.html](./index.html)，通过极简字符串消息协议（`window.chrome?.webview || window.desktopNote`）与系统原生外壳双向通信：
 
 ```text
 daily-todo-pwa/
-├── index.html                    # 三端共享核心前端（Windows / macOS / Web PWA）
+├── index.html                    # 全平台共享核心前端（Windows / macOS / Linux / Web PWA）
 ├── fusion-pixel-sc.woff2         # 12px 原生像素中文字体（SIL OFL 1.1）
 ├── manifest.webmanifest          # PWA 清单
 ├── service-worker.js             # PWA 离线缓存
@@ -218,6 +262,11 @@ daily-todo-pwa/
 │   ├── Info.plist                # 无 Dock 图标后台常驻配置（LSUIElement=true）
 │   ├── install.sh                # macOS 一键编译打包 .app 与 LaunchAgent 自启脚本
 │   └── uninstall.sh              # macOS 一键卸载脚本
+├── linux/
+│   ├── desktop_note.py           # Linux 原生壳（GTK 3 + WebKit2GTK + 60fps 动效 + 三级浮窗 + IPC + 热更新）
+│   ├── to-do-list.desktop        # XDG 桌面入口模板
+│   ├── install.sh                # Linux 一键安装与 XDG 开机自启脚本
+│   └── uninstall.sh              # Linux 一键卸载脚本
 └── assets/                       # README 展示截图
 ```
 
@@ -225,7 +274,7 @@ daily-todo-pwa/
 
 ## 🛠️ 开发、热更新与自动化自测
 
-- **实时热更新**：Windows 与 macOS 原生外壳均内置了 `app/index.html` 文件监听（250ms 防抖），修改前端样式或脚本后保存即可自动刷新，无需重启桌面进程。
+- **实时热更新**：Windows、macOS 与 Linux 原生外壳均内置了 `app/index.html` 文件监听（250ms 防抖），修改前端样式或脚本后保存即可自动刷新，无需重启桌面进程。
 - **Windows 端自动化端到端自测**：
   ```powershell
   & "$env:LOCALAPPDATA\to-do-list\to-do-list.exe" --self-test
