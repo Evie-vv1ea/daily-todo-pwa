@@ -102,15 +102,15 @@ irm https://raw.githubusercontent.com/Evie-vv1ea/daily-todo-pwa/main/windows/ins
 ```powershell
 git clone https://github.com/Evie-vv1ea/daily-todo-pwa.git
 cd daily-todo-pwa
-powershell -ExecutionPolicy Bypass -File .\windows\install.ps1
+powershell -ExecutionPolicy Bypass -File ./windows/install.ps1
 ```
 
 **卸载（默认保留本地任务数据）**
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\windows\uninstall.ps1
+powershell -ExecutionPolicy Bypass -File ./windows/uninstall.ps1
 # 如需连同本地数据一起清除：
-powershell -ExecutionPolicy Bypass -File .\windows\uninstall.ps1 -RemoveData
+powershell -ExecutionPolicy Bypass -File ./windows/uninstall.ps1 -RemoveData
 ```
 
 ---

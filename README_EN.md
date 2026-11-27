@@ -47,10 +47,10 @@ irm https://raw.githubusercontent.com/Evie-vv1ea/daily-todo-pwa/main/windows/ins
 # Or install from a local clone
 git clone https://github.com/Evie-vv1ea/daily-todo-pwa.git
 cd daily-todo-pwa
-powershell -ExecutionPolicy Bypass -File .\windows\install.ps1
+powershell -ExecutionPolicy Bypass -File ./windows/install.ps1
 
 # Uninstall (keeps local tasks by default; pass -RemoveData to delete all data)
-powershell -ExecutionPolicy Bypass -File .\windows\uninstall.ps1
+powershell -ExecutionPolicy Bypass -File ./windows/uninstall.ps1
 ```
 
 ### macOS 12+
